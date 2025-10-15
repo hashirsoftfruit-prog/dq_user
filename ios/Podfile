@@ -1,0 +1,96 @@
+# Uncomment this line to define a global platform for your project
+platform :ios, '15.0'
+
+use_frameworks! :linkage => :static
+use_modular_headers!
+
+# Disable CocoaPods analytics for faster builds
+ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+
+project 'Runner', {
+  'Debug' => :debug,
+  'Profile' => :release,
+  'Release' => :release,
+}
+
+# Function to find Flutter SDK
+def flutter_root
+  generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
+  unless File.exist?(generated_xcode_build_settings_path)
+    raise "#{generated_xcode_build_settings_path} must exist. Run flutter pub get first."
+  end
+
+  File.foreach(generated_xcode_build_settings_path) do |line|
+    matches = line.match(/FLUTTER_ROOT\=(.*)/)
+    return matches[1].strip if matches
+  end
+  raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}"
+end
+
+require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
+
+flutter_ios_podfile_setup
+
+target 'Runner' do
+  use_frameworks! :linkage => :static
+
+  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+
+  # HyperSDK Flutter plugin
+  pod 'HyperSDK', :modular_headers => true
+
+  # pod 'HyperSDK', '2.2.2'  # ⬅️ pin here
+
+
+  # ZoomVideoSDK
+  pod 'ZoomVideoSDK', :modular_headers => true
+
+  target 'RunnerTests' do
+    inherit! :search_paths
+  end
+end
+
+post_install do |installer|
+  # Run HyperSDK Fuse.rb script
+  fuse_path = "./Pods/HyperSDK/Fuse.rb"
+  clean_assets = true
+  if File.exist?(fuse_path)
+    if system("ruby", fuse_path.to_s, clean_assets.to_s)
+    end
+  end
+
+  installer.pods_project.targets.each do |target|
+    # ZoomVideoSDK: Add VideoToolbox.framework
+    if target.name == 'ZoomVideoSDK' && target.respond_to?(:frameworks_build_phase)
+      video_toolbox = installer.sandbox.project_path.join("System/Library/Frameworks/VideoToolbox.framework")
+      ref = installer.pods_project.new_file(video_toolbox)
+      target.frameworks_build_phase.add_file_reference(ref, true)
+    end
+
+    # Build settings for all targets
+    target.build_configurations.each do |config|
+      config.build_settings['GCC_WARN_INHIBIT_ALL_WARNINGS'] = 'YES'
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
+      config.build_settings.delete('EXCLUDED_ARCHS[sdk=iphonesimulator*]')
+      config.build_settings['SWIFT_CONCURRENCY'] = 'complete'
+      config.build_settings['DEFINES_MODULE'] = 'YES'
+      config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'YES'
+      config.build_settings['HEADER_SEARCH_PATHS'] ||= ['$(inherited)']
+      config.build_settings['HEADER_SEARCH_PATHS'] << "$(PODS_ROOT)/HyperSDK/**"
+    end
+
+    # Flutter build settings
+    flutter_additional_ios_build_settings(target)
+
+    # Fix HyperSDK headers
+    if target.name == 'HyperSDK'
+      target.build_configurations.each do |config|
+        config.build_settings['HEADER_SEARCH_PATHS'] ||= ['$(inherited)']
+        config.build_settings['HEADER_SEARCH_PATHS'] << "$(PODS_ROOT)/HyperSDK/HyperSDK.framework/Headers"
+      end
+    end
+  end
+end
+
+
+

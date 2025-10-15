@@ -1,0 +1,22 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "doctor-on-queue",
+          "appId": "1:368796877204:android:b7d218a37e970dcd4a4f81",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "doctor-on-queue",
+          "configurations": {
+            "android": "1:368796877204:android:b7d218a37e970dcd4a4f81",
+            "ios": "1:368796877204:ios:c3bf1b4fee6dd7a14a4f81"
+          }
+        }
+      }
+    }
+  }
+}

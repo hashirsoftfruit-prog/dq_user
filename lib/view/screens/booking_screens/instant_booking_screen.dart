@@ -68,10 +68,16 @@ class _BookingScreenState extends State<BookingScreen>
   void initState() {
     initFns();
     Future.delayed(Duration.zero, () async {
-      getIt<BookingManager>().setPrefferedLanguage(StringConstants.dPrefNoPref);
-      getIt<BookingManager>().setPrefferedDocGender(
-        StringConstants.dPrefNoPref,
-      );
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        getIt<BookingManager>().setPrefferedLanguage(
+          StringConstants.dPrefNoPref,
+        );
+        getIt<BookingManager>().setBackCalled(false);
+        getIt<BookingManager>().setPaymentInitiated(false);
+        getIt<BookingManager>().setPrefferedDocGender(
+          StringConstants.dPrefNoPref,
+        );
+      });
       // getIt<BookingManager>().selectPriceCategory(DoctorCatogory(title: StringConstants.dPrefNoPref, consultationCategory: 0, doctors: getIt<BookingManager>().docsData?.doctors));
     });
     // scollCntr.addListener(_scrollListener);
@@ -353,9 +359,11 @@ class _BookingScreenState extends State<BookingScreen>
             final paymentStatus =
                 bookingManager.isPaymentOnProcess ||
                 bookingManager.proceedLoader;
+            final isBackCalled = bookingManager.isBackCalled;
+            final isPaymentInitiated = bookingManager.isPaymentFlowInitiated;
 
             // If a payment is in progress
-            if (paymentStatus) {
+            if (paymentStatus && !isBackCalled) {
               if (Platform.isAndroid) {
                 final backPressResult = await PaymentService.instance.hyperSDK
                     .onBackPress();
@@ -376,11 +384,22 @@ class _BookingScreenState extends State<BookingScreen>
                 }
               }
               return; // Don't pop automatically
+            } else {
+              log("message is no payment is on process or loading");
+              // If no payment is in progress → normal back navigation
+              bookingManager.disposeBillScreen();
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                log("message is called back from here");
+                if (context.mounted &&
+                    !isPaymentInitiated &&
+                    !Platform.isIOS &&
+                    !isBackCalled) {
+                  getIt<BookingManager>().setBackCalled(true);
+                  Navigator.of(context).pop();
+                }
+              });
+              return; // Don't pop automatically
             }
-            log("message is no payment is on process or loading");
-            // If no payment is in progress → normal back navigation
-            bookingManager.disposeBillScreen();
-            if (context.mounted) Navigator.of(context).pop();
           },
 
           child: Consumer<BookingManager>(

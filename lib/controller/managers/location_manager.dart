@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
+import 'package:dqapp/controller/managers/state_manager.dart';
 import 'package:dqapp/view/theme/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -125,6 +128,7 @@ class LocationManager extends ChangeNotifier {
 
   Future<bool?> getLocation() async {
     var status = await Permission.location.request();
+    log(status.toString());
 
     if (status.isGranted) {
       try {

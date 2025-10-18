@@ -92,6 +92,21 @@ class BookingManager extends ChangeNotifier {
 
   bool saveBookingCalled = false;
 
+  //[isBackCalled] and [isPaymentFlowInitiated] is
+  //used for smooth back button from payment page
+  bool isBackCalled = false;
+  bool isPaymentFlowInitiated = false;
+
+  setBackCalled(val) {
+    isBackCalled = val;
+    notifyListeners();
+  }
+
+  setPaymentInitiated(val) {
+    isPaymentFlowInitiated = val;
+    notifyListeners();
+  }
+
   //for passing to psychology schedule booking
   int? psychologyBookingType;
 
@@ -165,6 +180,7 @@ class BookingManager extends ChangeNotifier {
   void resetPaymentState() {
     log("message is reset payment called");
     saveBookingCalled = false;
+    setPaymentInitiated(false);
     isPaymentOnProcess = false;
     paymentMessage = "";
     currentTempBookingId = null;
@@ -559,6 +575,7 @@ class BookingManager extends ChangeNotifier {
       typeOfPsychology: typeOfPsychology,
       subSpecialityId: subspecialityId,
     );
+    log("doctors data ${result.toJson()}");
     if (result.status == true && result.isAnyDoctorExist == true) {
       getIt<BookingManager>().setDocsData(result);
 
@@ -854,6 +871,7 @@ class BookingManager extends ChangeNotifier {
         getIt<SharedPreferences>().getString(StringConstants.token) ?? "";
 
     dynamic responseData = await getIt<DioClient>().post(endpoint, data, tokn);
+    log('request of getdocs list $data');
     log('response of getdocs list $responseData');
 
     if (responseData != null) {

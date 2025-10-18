@@ -215,7 +215,7 @@ class _ConfirmPatientDetailsState extends State<ConfirmPatientDetails> {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           getIt<BookingManager>().setSaveBookingCalled(false);
         });
-
+        log("message is instant");
         navState.popUntil((route) => route.isFirst);
         navState.push(
           MaterialPageRoute(
@@ -253,6 +253,7 @@ class _ConfirmPatientDetailsState extends State<ConfirmPatientDetails> {
     // required
   }) async {
     final saveBookingCalled = getIt<BookingManager>().saveBookingCalled;
+    getIt<BookingManager>().setPaymentInitiated(true);
     final validationResult = await validateBooking();
 
     if (validationResult.status != true && validationResult.message != "") {
@@ -271,6 +272,7 @@ class _ConfirmPatientDetailsState extends State<ConfirmPatientDetails> {
 
     if (!isFree && validationResult.sdkPayload != null) {
       // --- Trigger payment and exit. Rest will be handled via Consumer
+
       getIt<BookingManager>().initiatePayment(
         validationResult.sdkPayload,
         tempBookingId: validationResult.temperoryBookingId!,
@@ -513,11 +515,13 @@ class _ConfirmPatientDetailsState extends State<ConfirmPatientDetails> {
               }
             });
           } else if (!mgr.isPaymentOnProcess && mgr.paymentMessage != "") {
+            log("message is hereeeee");
             WidgetsBinding.instance.addPostFrameCallback((_) {
               showTopSnackBar(
                 Overlay.of(context),
                 ErrorToast(message: mgr.paymentMessage),
               );
+              getIt<BookingManager>().setBackCalled(false);
               getIt<BookingManager>().resetPaymentState();
             });
           }

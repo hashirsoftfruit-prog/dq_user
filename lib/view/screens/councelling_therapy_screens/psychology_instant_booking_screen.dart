@@ -62,20 +62,28 @@ class _PsychologyInstantBookingScreenState
   void initState() {
     super.initState();
 
-    getIt<BookingManager>().getPatientsDetailsList();
-    // getIt<BookingManager>().getBillDetails(spID:widget.specialityId ,type:widget.isScheduledOnline==true?1:2,doctorId: widget.doctorDetails?.id );
-    // if(widget.docsData.packageAvailability!=true){}
-    getIt<BookingManager>().getPackages(
-      widget.specialityId,
-      widget.subSpecialityId,
-    );
-    Future.delayed(Duration.zero, () async {
-      getIt<BookingManager>().setPrefferedLanguage("English");
-      getIt<BookingManager>().setPrefferedDocGender(
-        StringConstants.dPrefNoPref,
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getIt<BookingManager>().getPatientsDetailsList();
+      getIt<BookingManager>().setBackCalled(false);
+      getIt<BookingManager>().setPaymentInitiated(false);
+      // getIt<BookingManager>().getBillDetails(spID:widget.specialityId ,type:widget.isScheduledOnline==true?1:2,doctorId: widget.doctorDetails?.id );
+      // if(widget.docsData.packageAvailability!=true){}
+      getIt<BookingManager>().getPackages(
+        widget.specialityId,
+        widget.subSpecialityId,
       );
     });
-    getBillDetails();
+    Future.delayed(Duration.zero, () async {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        getIt<BookingManager>().setPrefferedLanguage("English");
+        getIt<BookingManager>().setPrefferedDocGender(
+          StringConstants.dPrefNoPref,
+        );
+      });
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getBillDetails();
+    });
     // scollCntr.addListener(_scrollListener);
   }
 
@@ -145,9 +153,11 @@ class _PsychologyInstantBookingScreenState
         final bookingManager = getIt<BookingManager>();
         final paymentStatus =
             bookingManager.isPaymentOnProcess || bookingManager.proceedLoader;
+        final isBackCalled = bookingManager.isBackCalled;
+        final isPaymentInitiated = bookingManager.isPaymentFlowInitiated;
 
         // If a payment is in progress
-        if (paymentStatus) {
+        if (paymentStatus && !isBackCalled) {
           if (Platform.isAndroid) {
             final backPressResult = await PaymentService.instance.hyperSDK
                 .onBackPress();
@@ -156,7 +166,8 @@ class _PsychologyInstantBookingScreenState
             // If SDK allows back navigation
             if (backPressResult.toLowerCase() == "true") {
               bookingManager.disposeBillScreen();
-              if (context.mounted) Navigator.of(context).pop();
+              // if (context.mounted) Navigator.of(context).pop();
+              Navigator.of(context).pop();
             } else {
               // Block back press while payment in progress
               log(
@@ -165,11 +176,22 @@ class _PsychologyInstantBookingScreenState
             }
           }
           return; // Don't pop automatically
+        } else {
+          log("message is no payment is on process or loading");
+          // If no payment is in progress → normal back navigation
+          bookingManager.disposeBillScreen();
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            log("message is called back from here");
+            if (context.mounted &&
+                !isPaymentInitiated &&
+                !Platform.isIOS &&
+                !isBackCalled) {
+              getIt<BookingManager>().setBackCalled(true);
+              Navigator.of(context).pop();
+            }
+          });
+          return; // Don't pop automatically
         }
-        log("message is no payment is on process or loading");
-        // If no payment is in progress → normal back navigation
-        bookingManager.disposeBillScreen();
-        if (context.mounted) Navigator.of(context).pop();
       },
       child: LayoutBuilder(
         builder: (context, constraints) {

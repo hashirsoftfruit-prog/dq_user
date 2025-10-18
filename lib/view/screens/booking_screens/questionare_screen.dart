@@ -31,7 +31,7 @@ class _NotificationScreenState extends State<QuestionnaireScreen> {
   int selectedPage = 0;
   @override
   void initState() {
-    getIt<QuestionnaireManager>().getQuestionnare();
+    getIt<QuestionnaireManager>().getQuestionnare(widget.appoinmentId);
     super.initState();
   }
 
@@ -151,6 +151,7 @@ class _NotificationScreenState extends State<QuestionnaireScreen> {
                                       : TimerWidget(
                                           appoinmentId: widget.appoinmentId,
                                           bookingId: widget.bookingId,
+                                          onBackPress: onWillPop,
                                           fn: () async {
                                             if (questionareSubmitted == false) {
                                               await getIt<
@@ -166,190 +167,198 @@ class _NotificationScreenState extends State<QuestionnaireScreen> {
                               ),
                             ),
                             questionareSubmitted == false
-                                ? Flexible(
-                                    child: Container(
-                                      margin: const EdgeInsets.only(top: 8),
-                                      decoration: BoxDecoration(
-                                        color: clrFFFFFF,
-                                        borderRadius:
-                                            const BorderRadius.vertical(
-                                              top: Radius.circular(30),
+                                ? (mgr.questionnaireModel == null ||
+                                          mgr
+                                                  .questionnaireModel!
+                                                  .questionnaires ==
+                                              null)
+                                      ? const SizedBox()
+                                      : Flexible(
+                                          child: Container(
+                                            margin: const EdgeInsets.only(
+                                              top: 8,
                                             ),
-                                        boxShadow: [boxShadow7],
-                                      ),
-                                      child: Padding(
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: w10p * 0.4,
-                                          vertical: 8,
-                                        ),
-                                        child: Column(
-                                          children: [
-                                            Expanded(
-                                              child: PageView.builder(
-                                                physics:
-                                                    const NeverScrollableScrollPhysics(),
-                                                controller: _pageCntrlr,
-                                                onPageChanged: (val) {
-                                                  setState(() {
-                                                    selectedPage = val;
-                                                  });
-                                                },
-                                                padEnds: true,
-                                                itemCount: mgr
-                                                    .questionnaireModel!
-                                                    .questionnaires!
-                                                    .length,
-                                                itemBuilder: (context, index) {
-                                                  Questionnaires qn = mgr
-                                                      .questionnaireModel!
-                                                      .questionnaires![index];
-                                                  return Container(
-                                                    child:
-                                                        qn.questionType ==
-                                                            StringConstants
-                                                                .qnTypeRadio
-                                                        ? SelectQnQuestion(
-                                                            isMandatoryQn:
-                                                                qn.isMandatory ==
-                                                                true,
-                                                            elseFn: () {
-                                                              submit();
-                                                            },
-                                                            isFirstQn:
-                                                                index == 0,
-                                                            isLastQn:
-                                                                index ==
-                                                                mgr
-                                                                        .questionnaireModel!
-                                                                        .questionnaires!
-                                                                        .length -
-                                                                    1,
-                                                            pgCntrl:
-                                                                _pageCntrlr,
-                                                            w1p: w10p * 0.1,
-                                                            h1p: h1p,
-                                                            data: qn,
-                                                          )
-                                                        : qn.questionType ==
-                                                              StringConstants
-                                                                  .qnTypeSelect
-                                                        ? SelectQnQuestion(
-                                                            isMandatoryQn:
-                                                                qn.isMandatory ==
-                                                                true,
-                                                            isFirstQn:
-                                                                index == 0,
-                                                            elseFn: () {
-                                                              submit();
-                                                            },
-                                                            isLastQn:
-                                                                index ==
-                                                                mgr
-                                                                        .questionnaireModel!
-                                                                        .questionnaires!
-                                                                        .length -
-                                                                    1,
-                                                            pgCntrl:
-                                                                _pageCntrlr,
-                                                            w1p: w10p * 0.1,
-                                                            h1p: h1p,
-                                                            data: qn,
-                                                          )
-                                                        : qn.questionType ==
-                                                              StringConstants
-                                                                  .qnTypeCheckBx
-                                                        ? CheckBoxQuestion(
-                                                            isMandatoryQn:
-                                                                qn.isMandatory ==
-                                                                true,
-                                                            isFirstQn:
-                                                                index == 0,
-                                                            elseFn: () {
-                                                              submit();
-                                                            },
-                                                            isLastQn:
-                                                                index ==
-                                                                mgr
-                                                                        .questionnaireModel!
-                                                                        .questionnaires!
-                                                                        .length -
-                                                                    1,
-                                                            pgCntrl:
-                                                                _pageCntrlr,
-                                                            w1p: w10p * 0.1,
-                                                            h1p: h1p,
-                                                            data: qn,
-                                                          )
-                                                        : qn.questionType ==
-                                                              StringConstants
-                                                                  .qnTypeTxtBox
-                                                        ? TextAreaQuestion(
-                                                            isMandatoryQn:
-                                                                qn.isMandatory ==
-                                                                true,
-                                                            isFirstQn:
-                                                                index == 0,
-                                                            elseFn: () {
-                                                              submit();
-                                                            },
-                                                            isLastQn:
-                                                                index ==
-                                                                mgr
-                                                                        .questionnaireModel!
-                                                                        .questionnaires!
-                                                                        .length -
-                                                                    1,
-                                                            pgCntrl:
-                                                                _pageCntrlr,
-                                                            w1p: w10p * 0.1,
-                                                            h1p: h1p,
-                                                            data: qn,
-                                                          )
-                                                        : qn.questionType ==
-                                                              StringConstants
-                                                                  .qnTypeTxtArea
-                                                        ? TextAreaQuestion(
-                                                            isMandatoryQn:
-                                                                qn.isMandatory ==
-                                                                true,
-                                                            isFirstQn:
-                                                                index == 0,
-                                                            elseFn: () {
-                                                              submit();
-                                                            },
-                                                            isLastQn:
-                                                                index ==
-                                                                mgr
-                                                                        .questionnaireModel!
-                                                                        .questionnaires!
-                                                                        .length -
-                                                                    1,
-                                                            pgCntrl:
-                                                                _pageCntrlr,
-                                                            w1p: w10p * 0.1,
-                                                            h1p: h1p,
-                                                            data: qn,
-                                                          )
-                                                        : SizedBox(
-                                                            width: 200,
-                                                            height: 200,
-                                                            child: Text(
-                                                              mgr
-                                                                      .questionnaireModel!
-                                                                      .questionnaires![index]
-                                                                      .question ??
-                                                                  "",
-                                                            ),
-                                                          ),
-                                                  );
-                                                },
+                                            decoration: BoxDecoration(
+                                              color: clrFFFFFF,
+                                              borderRadius:
+                                                  const BorderRadius.vertical(
+                                                    top: Radius.circular(30),
+                                                  ),
+                                              boxShadow: [boxShadow7],
+                                            ),
+                                            child: Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                horizontal: w10p * 0.4,
+                                                vertical: 8,
+                                              ),
+                                              child: Column(
+                                                children: [
+                                                  Expanded(
+                                                    child: PageView.builder(
+                                                      physics:
+                                                          const NeverScrollableScrollPhysics(),
+                                                      controller: _pageCntrlr,
+                                                      onPageChanged: (val) {
+                                                        setState(() {
+                                                          selectedPage = val;
+                                                        });
+                                                      },
+                                                      padEnds: true,
+                                                      itemCount: mgr
+                                                          .questionnaireModel!
+                                                          .questionnaires!
+                                                          .length,
+                                                      itemBuilder: (context, index) {
+                                                        Questionnaires qn = mgr
+                                                            .questionnaireModel!
+                                                            .questionnaires![index];
+                                                        return Container(
+                                                          child:
+                                                              qn.questionType ==
+                                                                  StringConstants
+                                                                      .qnTypeRadio
+                                                              ? SelectQnQuestion(
+                                                                  isMandatoryQn:
+                                                                      qn.isMandatory ==
+                                                                      true,
+                                                                  elseFn: () {
+                                                                    submit();
+                                                                  },
+                                                                  isFirstQn:
+                                                                      index ==
+                                                                      0,
+                                                                  isLastQn:
+                                                                      index ==
+                                                                      mgr.questionnaireModel!.questionnaires!.length -
+                                                                          1,
+                                                                  pgCntrl:
+                                                                      _pageCntrlr,
+                                                                  w1p:
+                                                                      w10p *
+                                                                      0.1,
+                                                                  h1p: h1p,
+                                                                  data: qn,
+                                                                )
+                                                              : qn.questionType ==
+                                                                    StringConstants
+                                                                        .qnTypeSelect
+                                                              ? SelectQnQuestion(
+                                                                  isMandatoryQn:
+                                                                      qn.isMandatory ==
+                                                                      true,
+                                                                  isFirstQn:
+                                                                      index ==
+                                                                      0,
+                                                                  elseFn: () {
+                                                                    submit();
+                                                                  },
+                                                                  isLastQn:
+                                                                      index ==
+                                                                      mgr.questionnaireModel!.questionnaires!.length -
+                                                                          1,
+                                                                  pgCntrl:
+                                                                      _pageCntrlr,
+                                                                  w1p:
+                                                                      w10p *
+                                                                      0.1,
+                                                                  h1p: h1p,
+                                                                  data: qn,
+                                                                )
+                                                              : qn.questionType ==
+                                                                    StringConstants
+                                                                        .qnTypeCheckBx
+                                                              ? CheckBoxQuestion(
+                                                                  isMandatoryQn:
+                                                                      qn.isMandatory ==
+                                                                      true,
+                                                                  isFirstQn:
+                                                                      index ==
+                                                                      0,
+                                                                  elseFn: () {
+                                                                    submit();
+                                                                  },
+                                                                  isLastQn:
+                                                                      index ==
+                                                                      mgr.questionnaireModel!.questionnaires!.length -
+                                                                          1,
+                                                                  pgCntrl:
+                                                                      _pageCntrlr,
+                                                                  w1p:
+                                                                      w10p *
+                                                                      0.1,
+                                                                  h1p: h1p,
+                                                                  data: qn,
+                                                                )
+                                                              : qn.questionType ==
+                                                                    StringConstants
+                                                                        .qnTypeTxtBox
+                                                              ? TextAreaQuestion(
+                                                                  isMandatoryQn:
+                                                                      qn.isMandatory ==
+                                                                      true,
+                                                                  isFirstQn:
+                                                                      index ==
+                                                                      0,
+                                                                  elseFn: () {
+                                                                    submit();
+                                                                  },
+                                                                  isLastQn:
+                                                                      index ==
+                                                                      mgr.questionnaireModel!.questionnaires!.length -
+                                                                          1,
+                                                                  pgCntrl:
+                                                                      _pageCntrlr,
+                                                                  w1p:
+                                                                      w10p *
+                                                                      0.1,
+                                                                  h1p: h1p,
+                                                                  data: qn,
+                                                                )
+                                                              : qn.questionType ==
+                                                                    StringConstants
+                                                                        .qnTypeTxtArea
+                                                              ? TextAreaQuestion(
+                                                                  isMandatoryQn:
+                                                                      qn.isMandatory ==
+                                                                      true,
+                                                                  isFirstQn:
+                                                                      index ==
+                                                                      0,
+                                                                  elseFn: () {
+                                                                    submit();
+                                                                  },
+                                                                  isLastQn:
+                                                                      index ==
+                                                                      mgr.questionnaireModel!.questionnaires!.length -
+                                                                          1,
+                                                                  pgCntrl:
+                                                                      _pageCntrlr,
+                                                                  w1p:
+                                                                      w10p *
+                                                                      0.1,
+                                                                  h1p: h1p,
+                                                                  data: qn,
+                                                                )
+                                                              : SizedBox(
+                                                                  width: 200,
+                                                                  height: 200,
+                                                                  child: Text(
+                                                                    mgr
+                                                                            .questionnaireModel!
+                                                                            .questionnaires![index]
+                                                                            .question ??
+                                                                        "",
+                                                                  ),
+                                                                ),
+                                                        );
+                                                      },
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  )
+                                          ),
+                                        )
                                 : const SizedBox(),
                           ],
                         ),

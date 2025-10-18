@@ -881,10 +881,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_zoom_videosdk
-      sha256: bb800c733c3a0a31909b2834922e75e089108980154ba1e60ef881c0e21b8802
+      sha256: "22731485fe48472a34ff0c7e787a382f5e1ec662fd89186e58e760974fc2a0cb"
       url: "https://pub.dev"
     source: hosted
-    version: "1.12.10"
+    version: "2.3.0"
   fluttertoast:
     dependency: "direct main"
     description:

@@ -33,96 +33,94 @@ class _BannerDetailsScreenScreenState extends State<BannerDetailsScreen> {
     double w10p = maxWidth * 0.1;
     double w1p = maxWidth * 0.01;
 
-    return SafeArea(
-      child: Consumer<BookingManager>(
-        builder: (context, mgr, child) {
-          return Scaffold(
-            appBar: getIt<SmallWidgets>().appBarWidget(
-              title: 'Offer Details',
-              height: h10p,
-              width: w10p,
-              fn: () {
+    return Consumer<BookingManager>(
+      builder: (context, mgr, child) {
+        return Scaffold(
+          appBar: getIt<SmallWidgets>().appBarWidget(
+            title: 'Offer Details',
+            height: h10p,
+            width: w10p,
+            fn: () {
+              Navigator.pop(context);
+            },
+          ),
+          body: Container(
+            color: Colors.white,
+            child: Stack(
+              children: [
+                pad(
+                  horizontal: w1p * 4,
+                  child: ListView(
+                    children: [
+                      Text(
+                        widget.banner.title ?? "",
+                        style: t500_18.copyWith(color: clr2D2D2D),
+                      ),
+                      verticalSpace(8),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Colours.grad1, Colours.primaryblue],
+                            ),
+                            borderRadius: BorderRadius.circular(
+                              containerRadius / 2,
+                            ),
+                          ),
+                          child: AspectRatio(
+                            aspectRatio: 2 / 1,
+                            child: SmallWidgets().cachedImg(
+                              widget.banner.image ?? "",
+                            ),
+                          ),
+                        ),
+                      ),
+                      verticalSpace(h1p * 2),
+                      pad(
+                        horizontal: w1p * 2,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            verticalSpace(8),
+                            Text(
+                              widget.banner.subtitle ?? "",
+                              style: t400_16.copyWith(color: clr2D2D2D),
+                            ),
+                            verticalSpace(8),
+                            Text(
+                              widget.banner.description ?? "",
+                              style: t400_16.copyWith(color: clr2D2D2D),
+                            ),
+                            verticalSpace(24),
+                          ],
+                        ),
+                      ),
+                      verticalSpace(h1p),
+                      const Divider(color: Colours.lightBlu),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerDocked,
+          floatingActionButton: pad(
+            vertical: h1p * 2,
+            horizontal: 18,
+            child: ButtonWidget(
+              btnText: 'Close',
+              ontap: () async {
+                // if(mgr.patientsUnderPackage.isEmpty){
                 Navigator.pop(context);
+
+                // }
               },
             ),
-            body: Container(
-              color: Colors.white,
-              child: Stack(
-                children: [
-                  pad(
-                    horizontal: w1p * 4,
-                    child: ListView(
-                      children: [
-                        Text(
-                          widget.banner.title ?? "",
-                          style: t500_18.copyWith(color: clr2D2D2D),
-                        ),
-                        verticalSpace(8),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [Colours.grad1, Colours.primaryblue],
-                              ),
-                              borderRadius: BorderRadius.circular(
-                                containerRadius / 2,
-                              ),
-                            ),
-                            child: AspectRatio(
-                              aspectRatio: 2 / 1,
-                              child: SmallWidgets().cachedImg(
-                                widget.banner.image ?? "",
-                              ),
-                            ),
-                          ),
-                        ),
-                        verticalSpace(h1p * 2),
-                        pad(
-                          horizontal: w1p * 2,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              verticalSpace(8),
-                              Text(
-                                widget.banner.subtitle ?? "",
-                                style: t400_16.copyWith(color: clr2D2D2D),
-                              ),
-                              verticalSpace(8),
-                              Text(
-                                widget.banner.description ?? "",
-                                style: t400_16.copyWith(color: clr2D2D2D),
-                              ),
-                              verticalSpace(24),
-                            ],
-                          ),
-                        ),
-                        verticalSpace(h1p),
-                        const Divider(color: Colours.lightBlu),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            floatingActionButtonLocation:
-                FloatingActionButtonLocation.centerDocked,
-            floatingActionButton: pad(
-              vertical: h1p * 2,
-              horizontal: 18,
-              child: ButtonWidget(
-                btnText: 'Close',
-                ontap: () async {
-                  // if(mgr.patientsUnderPackage.isEmpty){
-                  Navigator.pop(context);
-
-                  // }
-                },
-              ),
-            ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

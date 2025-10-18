@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:io';
+
 import 'package:dqapp/l10n/app_localizations.dart';
 import 'package:dqapp/view/theme/text_styles.dart';
 import 'dart:async';
@@ -17,11 +19,13 @@ class TimerWidget extends StatefulWidget {
   final String appoinmentId;
   final int bookingId;
   final Function fn;
+  final Function onBackPress;
   const TimerWidget({
     super.key,
     required this.appoinmentId,
     required this.bookingId,
     required this.fn,
+    required this.onBackPress,
   });
   @override
   State<TimerWidget> createState() => _TimerWidgetState();
@@ -162,6 +166,17 @@ class _TimerWidgetState extends State<TimerWidget> {
                 : const SizedBox(),
           ),
         ),
+        if (Platform.isIOS && !timout)
+          GestureDetector(
+            onTap: () async {
+              // Call the callback and await its result if needed
+              await widget.onBackPress();
+            },
+            child: Text(
+              AppLocalizations.of(context)!.cancelBooking,
+              style: t400_14.copyWith(color: Colors.black),
+            ),
+          ),
       ],
     );
   }

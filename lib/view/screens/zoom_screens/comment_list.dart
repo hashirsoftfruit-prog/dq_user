@@ -13,8 +13,11 @@ class CommentList extends HookWidget {
   final ZoomVideoSdk zoom;
   final ZoomVideoSdkEventListener eventListener;
 
-  const CommentList(
-      {super.key, required this.zoom, required this.eventListener});
+  const CommentList({
+    super.key,
+    required this.zoom,
+    required this.eventListener,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -23,44 +26,52 @@ class CommentList extends HookWidget {
     var messageLength = useState(0);
 
     useEffect(() {
-      eventListener.addEventListener();
-      EventEmitter emitter = eventListener.eventEmitter;
+      // eventListener.addEventListener();
+      // eventListener.eventEmitter.addListener(EventType.onChatNewMessageNotify, handler)
+      // EventEmitter emitter = eventListener.eventEmitter;
 
-      final chatNewMessageNotify =
-          emitter.on(EventType.onChatNewMessageNotify, (data) async {
-        // print("new message arrived");
-        ZoomVideoSdkChatMessage newMessage =
-            ZoomVideoSdkChatMessage.fromJson(jsonDecode(data.toString()));
-        chatMessages.value.add(newMessage);
-        messageLength.value += 1;
-        if (listScrollController.hasClients) {
-          listScrollController
-              .jumpTo(listScrollController.position.maxScrollExtent);
-        }
-      });
-
-      final deleteChatMessageNotify =
-          emitter.on(EventType.onChatDeleteMessageNotify, (data) async {
-        data = data as Map;
-        var toRemove = [];
-        for (var message in chatMessages.value) {
-          if (message.messageID == data['msgID']) {
-            toRemove.add(message);
+      final chatNewMessageNotify = eventListener.eventEmitter.addListener(
+        EventType.onChatNewMessageNotify,
+        (data) async {
+          // print("new message arrived");
+          ZoomVideoSdkChatMessage newMessage = ZoomVideoSdkChatMessage.fromJson(
+            jsonDecode(data.toString()),
+          );
+          chatMessages.value.add(newMessage);
+          messageLength.value += 1;
+          if (listScrollController.hasClients) {
+            listScrollController.jumpTo(
+              listScrollController.position.maxScrollExtent,
+            );
           }
-        }
-        chatMessages.value.removeWhere((e) => toRemove.contains(e));
+        },
+      );
 
-        messageLength.value -= 1;
-        if (listScrollController.hasClients) {
-          listScrollController
-              .jumpTo(listScrollController.position.maxScrollExtent);
-        }
-      });
+      final deleteChatMessageNotify = eventListener.eventEmitter.addListener(
+        EventType.onChatDeleteMessageNotify,
+        (data) async {
+          data = data as Map;
+          var toRemove = [];
+          for (var message in chatMessages.value) {
+            if (message.messageID == data['msgID']) {
+              toRemove.add(message);
+            }
+          }
+          chatMessages.value.removeWhere((e) => toRemove.contains(e));
+
+          messageLength.value -= 1;
+          if (listScrollController.hasClients) {
+            listScrollController.jumpTo(
+              listScrollController.position.maxScrollExtent,
+            );
+          }
+        },
+      );
 
       return () => {
-            chatNewMessageNotify.cancel(),
-            deleteChatMessageNotify.cancel(),
-          };
+        chatNewMessageNotify.cancel(),
+        deleteChatMessageNotify.cancel(),
+      };
     }, [zoom]);
 
     void deleteMessage(String msgId) async {
@@ -74,17 +85,21 @@ class CommentList extends HookWidget {
         margin: const EdgeInsets.only(left: 20, right: 100, bottom: 250),
         alignment: Alignment.bottomLeft,
         child: ListView.separated(
-            controller: listScrollController,
-            scrollDirection: Axis.vertical,
-            itemCount: chatMessages.value.length,
-            itemBuilder: (BuildContext context, int index) {
-              VisualDensity.compact;
-              return Row(
-                children: [
-                  Flexible(
-                      child: Container(
+          controller: listScrollController,
+          scrollDirection: Axis.vertical,
+          itemCount: chatMessages.value.length,
+          itemBuilder: (BuildContext context, int index) {
+            VisualDensity.compact;
+            return Row(
+              children: [
+                Flexible(
+                  child: Container(
                     padding: const EdgeInsets.only(
-                        left: 5, right: 5, top: 5, bottom: 5),
+                      left: 5,
+                      right: 5,
+                      top: 5,
+                      bottom: 5,
+                    ),
                     decoration: BoxDecoration(
                       borderRadius: const BorderRadius.all(Radius.circular(8)),
                       color: const Color.fromRGBO(0, 0, 0, 0.6),
@@ -111,27 +126,27 @@ class CommentList extends HookWidget {
                             text: chatMessages.value[index].content,
                             recognizer: TapGestureRecognizer()
                               ..onTap = () => showDialog<String>(
-                                    context: context,
-                                    builder: (BuildContext context) =>
-                                        AlertDialog(
-                                      title: const Text('Delete Message?'),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.pop(context, 'Cancel'),
-                                          child: const Text('Cancel'),
-                                        ),
-                                        TextButton(
-                                          onPressed: () => {
-                                            deleteMessage(chatMessages
-                                                .value[index].messageID),
-                                            Navigator.pop(context, 'Cancel')
-                                          },
-                                          child: const Text('Yes'),
-                                        ),
-                                      ],
+                                context: context,
+                                builder: (BuildContext context) => AlertDialog(
+                                  title: const Text('Delete Message?'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.pop(context, 'Cancel'),
+                                      child: const Text('Cancel'),
                                     ),
-                                  ),
+                                    TextButton(
+                                      onPressed: () => {
+                                        deleteMessage(
+                                          chatMessages.value[index].messageID,
+                                        ),
+                                        Navigator.pop(context, 'Cancel'),
+                                      },
+                                      child: const Text('Yes'),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             style: GoogleFonts.lato(
                               textStyle: const TextStyle(
                                 fontSize: 14,
@@ -143,14 +158,14 @@ class CommentList extends HookWidget {
                         ],
                       ),
                     ),
-                  ))
-                ],
-              );
-            },
-            separatorBuilder: (BuildContext context, int index) =>
-                const SizedBox(
-                  height: 4,
-                )),
+                  ),
+                ),
+              ],
+            );
+          },
+          separatorBuilder: (BuildContext context, int index) =>
+              const SizedBox(height: 4),
+        ),
       ),
     );
   }

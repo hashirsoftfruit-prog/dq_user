@@ -1,0 +1,41 @@
+{
+  "name": "flutter_zoom_videosdk",
+  "version": "0.0.1",
+  "summary": "A new Flutter plugin project.",
+  "description": "A new Flutter plugin project.",
+  "homepage": "http://example.com",
+  "license": {
+    "file": "../LICENSE"
+  },
+  "authors": {
+    "zoom": "http://example.com"
+  },
+  "source": {
+    "path": "."
+  },
+  "source_files": "Classes/**/*",
+  "public_header_files": "Classes/*.h",
+  "dependencies": {
+    "Flutter": [],
+    "ZoomVideoSDK/ZoomVideoSDK": [
+      "2.3.0"
+    ],
+    "ZoomVideoSDK/zoomcml": [
+      "2.3.0"
+    ],
+    "ZoomVideoSDK/CptShare": [
+      "2.3.0"
+    ],
+    "ZoomVideoSDK/zm_annoter_dynamic": [
+      "2.3.0"
+    ]
+  },
+  "platforms": {
+    "ios": "13.0"
+  },
+  "pod_target_xcconfig": {
+    "DEFINES_MODULE": "YES",
+    "EXCLUDED_ARCHS[sdk=iphonesimulator*]": "i386 arm64"
+  },
+  "preserve_paths": "ZoomVideoSDK.xcframework/**/*"
+}

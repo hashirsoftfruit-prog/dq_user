@@ -75,7 +75,8 @@ dependencies:
   flutter_svg: ^2.2.1
   flutter_swipe_button: ^2.1.3
   flutter_tts: ^4.2.3
-  flutter_zoom_videosdk: 1.12.10
+  flutter_zoom_videosdk: ^2.3.0
+  # flutter_zoom_videosdk: ^2.3.0
   fluttertoast: ^9.0.0
   generic_expandable_text: ^0.0.1
   geocoding: ^4.0.0

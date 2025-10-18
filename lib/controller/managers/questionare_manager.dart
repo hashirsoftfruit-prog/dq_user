@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dqapp/view/theme/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,13 +19,17 @@ class QuestionnaireManager extends ChangeNotifier {
     questionnaireModel = null;
   }
 
-  getQuestionnare() async {
+  getQuestionnare(String appointmentID) async {
     String endpoint = Endpoints.questionnareDetails;
 
     String tokn =
         getIt<SharedPreferences>().getString(StringConstants.token) ?? "";
 
-    dynamic responseData = await getIt<DioClient>().get(endpoint, tokn);
+    //TODO: change this into post for getting dynamic questions on the basis of speciality or subspeciality
+
+    final data = {"appointment_id": appointmentID};
+    dynamic responseData = await getIt<DioClient>().post(endpoint, data, tokn);
+    log("response of getQuestionnare $responseData");
     if (responseData != null) {
       var resp = QuestionnaireModel.fromJson(responseData);
 

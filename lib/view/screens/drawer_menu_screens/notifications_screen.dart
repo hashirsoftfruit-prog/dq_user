@@ -96,144 +96,138 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          double maxHeight = constraints.maxHeight;
-          double maxWidth = constraints.maxWidth;
-          double h1p = maxHeight * 0.01;
-          double h10p = maxHeight * 0.1;
-          double w10p = maxWidth * 0.1;
-          double w1p = maxWidth * 0.01;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        double maxHeight = constraints.maxHeight;
+        double maxWidth = constraints.maxWidth;
+        double h1p = maxHeight * 0.01;
+        double h10p = maxHeight * 0.1;
+        double w10p = maxWidth * 0.1;
+        double w1p = maxWidth * 0.01;
 
-          return Consumer<HomeManager>(
-            builder: (context, mgr, child) {
-              return Scaffold(
-                backgroundColor: Colors.white,
-                appBar: getIt<SmallWidgets>().appBarWidget(
-                  title: "Notifications",
-                  height: h10p * 0.9,
-                  width: w10p,
-                  fn: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                body: RefreshIndicator(
-                  onRefresh: () async {
-                    index = 1;
-                    getIt<HomeManager>().getNotifications(isRefresh: true);
-                  },
-                  child: Entry(
-                    yOffset: -100,
-                    // opacity: .5,
-                    // angle: 3.1415,
-                    delay: const Duration(milliseconds: 0),
-                    duration: const Duration(milliseconds: 1500),
-                    curve: Curves.decelerate,
-                    child: ListView(
-                      controller: _controller,
-                      children: [
-                        // mgr.consultations!=null && mgr.consultations!.isNotEmpty?
-                        // pad(horizontal: w1p*4,vertical: h1p,
-                        //     child: Text("Recent patients",style: TextStyles.textStyle6,)):SizedBox(),
-                        verticalSpace(h1p),
-                        mgr.notificationLoader == true
-                            ? Padding(
-                                padding: EdgeInsets.symmetric(vertical: h10p),
-                                child: const Center(child: LogoLoader()),
-                              )
-                            : mgr.notificationsModel?.notifications != null &&
-                                  mgr.notificationsModel!.notifications!.isEmpty
-                            ? Padding(
-                                padding: EdgeInsets.symmetric(vertical: h10p),
-                                child: Center(
-                                  child: Text(
-                                    AppLocalizations.of(
-                                      context,
-                                    )!.noNotifications,
-                                    style: TextStyles.notAvailableTxtStyle,
-                                  ),
+        return Consumer<HomeManager>(
+          builder: (context, mgr, child) {
+            return Scaffold(
+              backgroundColor: Colors.white,
+              appBar: getIt<SmallWidgets>().appBarWidget(
+                title: "Notifications",
+                height: h10p * 0.9,
+                width: w10p,
+                fn: () {
+                  Navigator.pop(context);
+                },
+              ),
+              body: RefreshIndicator(
+                onRefresh: () async {
+                  index = 1;
+                  getIt<HomeManager>().getNotifications(isRefresh: true);
+                },
+                child: Entry(
+                  yOffset: -100,
+                  // opacity: .5,
+                  // angle: 3.1415,
+                  delay: const Duration(milliseconds: 0),
+                  duration: const Duration(milliseconds: 1500),
+                  curve: Curves.decelerate,
+                  child: ListView(
+                    controller: _controller,
+                    children: [
+                      // mgr.consultations!=null && mgr.consultations!.isNotEmpty?
+                      // pad(horizontal: w1p*4,vertical: h1p,
+                      //     child: Text("Recent patients",style: TextStyles.textStyle6,)):SizedBox(),
+                      verticalSpace(h1p),
+                      mgr.notificationLoader == true
+                          ? Padding(
+                              padding: EdgeInsets.symmetric(vertical: h10p),
+                              child: const Center(child: LogoLoader()),
+                            )
+                          : mgr.notificationsModel?.notifications != null &&
+                                mgr.notificationsModel!.notifications!.isEmpty
+                          ? Padding(
+                              padding: EdgeInsets.symmetric(vertical: h10p),
+                              child: Center(
+                                child: Text(
+                                  AppLocalizations.of(context)!.noNotifications,
+                                  style: TextStyles.notAvailableTxtStyle,
                                 ),
-                              )
-                            : mgr.notificationsModel?.notifications != null &&
-                                  mgr
+                              ),
+                            )
+                          : mgr.notificationsModel?.notifications != null &&
+                                mgr
+                                    .notificationsModel!
+                                    .notifications!
+                                    .isNotEmpty
+                          ? pad(
+                              horizontal: w1p * 4,
+                              child: Column(
+                                children: mgr.notificationsModel!.notifications!.map((
+                                  e,
+                                ) {
+                                  String time = getIt<StateManager>()
+                                      .getTimeFromDTime(
+                                        DateTime.parse(e.dateTime!),
+                                      );
+                                  String date = getIt<StateManager>()
+                                      .getMonthDay(DateTime.parse(e.dateTime!));
+
+                                  var indx = mgr
                                       .notificationsModel!
                                       .notifications!
-                                      .isNotEmpty
-                            ? pad(
-                                horizontal: w1p * 4,
-                                child: Column(
-                                  children: mgr.notificationsModel!.notifications!.map((
-                                    e,
-                                  ) {
-                                    String time = getIt<StateManager>()
-                                        .getTimeFromDTime(
-                                          DateTime.parse(e.dateTime!),
-                                        );
-                                    String date = getIt<StateManager>()
-                                        .getMonthDay(
-                                          DateTime.parse(e.dateTime!),
-                                        );
+                                      .indexOf(e);
 
-                                    var indx = mgr
-                                        .notificationsModel!
-                                        .notifications!
-                                        .indexOf(e);
-
-                                    return Column(
-                                      children: [
-                                        InkWell(
-                                          onTap: () {
-                                            navigateNotification(e);
-                                            // Navigator.push(context, MaterialPageRoute(builder: (_)=>ChatPage(appId: 'temporary',bookingId: 0000,isCallAvailable: false,)));
-                                          },
-                                          child: NotificationItem(
-                                            h1p: h1p,
-                                            title: e.title ?? "",
-                                            subtitle: e.body ?? "",
-                                            w1p: w1p,
-                                            img: e.image ?? "",
-                                            date: date,
-                                            sheduledTime: time,
-                                          ),
+                                  return Column(
+                                    children: [
+                                      InkWell(
+                                        onTap: () {
+                                          navigateNotification(e);
+                                          // Navigator.push(context, MaterialPageRoute(builder: (_)=>ChatPage(appId: 'temporary',bookingId: 0000,isCallAvailable: false,)));
+                                        },
+                                        child: NotificationItem(
+                                          h1p: h1p,
+                                          title: e.title ?? "",
+                                          subtitle: e.body ?? "",
+                                          w1p: w1p,
+                                          img: e.image ?? "",
+                                          date: date,
+                                          sheduledTime: time,
                                         ),
-                                        mgr
-                                                            .notificationsModel!
-                                                            .notifications!
-                                                            .length -
-                                                        1 ==
-                                                    indx &&
-                                                mgr
-                                                        .notificationsModel!
-                                                        .notifications !=
-                                                    null &&
-                                                mgr.notificationsModel!.next !=
-                                                    null
-                                            ? const Padding(
-                                                padding: EdgeInsets.all(18.0),
-                                                child: Center(
-                                                  child:
-                                                      CircularProgressIndicator(
-                                                        color: Colours.boxblue,
-                                                      ),
-                                                ),
-                                              )
-                                            : const SizedBox(),
-                                      ],
-                                    );
-                                  }).toList(),
-                                ),
-                              )
-                            : const SizedBox(),
-                      ],
-                    ),
+                                      ),
+                                      mgr
+                                                          .notificationsModel!
+                                                          .notifications!
+                                                          .length -
+                                                      1 ==
+                                                  indx &&
+                                              mgr
+                                                      .notificationsModel!
+                                                      .notifications !=
+                                                  null &&
+                                              mgr.notificationsModel!.next !=
+                                                  null
+                                          ? const Padding(
+                                              padding: EdgeInsets.all(18.0),
+                                              child: Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                      color: Colours.boxblue,
+                                                    ),
+                                              ),
+                                            )
+                                          : const SizedBox(),
+                                    ],
+                                  );
+                                }).toList(),
+                              ),
+                            )
+                          : const SizedBox(),
+                    ],
                   ),
                 ),
-              );
-            },
-          );
-        },
-      ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

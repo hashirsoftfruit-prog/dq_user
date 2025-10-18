@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously, deprecated_member_use
 
 import 'dart:convert';
+import 'dart:developer';
 import 'package:dqapp/controller/managers/booking_manager.dart';
 import 'package:dqapp/controller/managers/chat_manager.dart';
 import 'package:dqapp/view/screens/zoom_screens/call_screen.dart';
@@ -231,75 +232,73 @@ class _ChatPageState extends State<ChatPage> {
   void _handleAttachmentPressed() {
     showModalBottomSheet<void>(
       context: context,
-      builder: (BuildContext context) => SafeArea(
-        child: SizedBox(
-          height: 200,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  _handleCameraSelection();
-                },
-                child: Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: Row(
-                    children: [
-                      const Icon(Icons.camera_alt_outlined),
-                      horizontalSpace(8),
-                      const Text('Camera'),
-                    ],
-                  ),
+      builder: (BuildContext context) => SizedBox(
+        height: 200,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _handleCameraSelection();
+              },
+              child: Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: Row(
+                  children: [
+                    const Icon(Icons.camera_alt_outlined),
+                    horizontalSpace(8),
+                    const Text('Camera'),
+                  ],
                 ),
               ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  _handleImageSelection();
-                },
-                child: Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: Row(
-                    children: [
-                      const Icon(Icons.image_outlined),
-                      horizontalSpace(8),
-                      const Text('Gallery'),
-                    ],
-                  ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _handleImageSelection();
+              },
+              child: Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: Row(
+                  children: [
+                    const Icon(Icons.image_outlined),
+                    horizontalSpace(8),
+                    const Text('Gallery'),
+                  ],
                 ),
               ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  _handleFileSelection();
-                },
-                child: Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: Row(
-                    children: [
-                      const Icon(Icons.file_copy_outlined),
-                      horizontalSpace(8),
-                      const Text('File'),
-                    ],
-                  ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _handleFileSelection();
+              },
+              child: Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: Row(
+                  children: [
+                    const Icon(Icons.file_copy_outlined),
+                    horizontalSpace(8),
+                    const Text('File'),
+                  ],
                 ),
               ),
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: Row(
-                    children: [
-                      const Icon(Icons.cancel_outlined),
-                      horizontalSpace(8),
-                      const Text('Cancel'),
-                    ],
-                  ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: Row(
+                  children: [
+                    const Icon(Icons.cancel_outlined),
+                    horizontalSpace(8),
+                    const Text('Cancel'),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -550,236 +549,234 @@ class _ChatPageState extends State<ChatPage> {
   // );
 
   @override
-  Widget build(BuildContext context) => SafeArea(
-    child: LayoutBuilder(
-      builder: (context, constraints) {
-        double maxHeight = constraints.maxHeight;
-        double maxWidth = constraints.maxWidth;
-        double h1p = maxHeight * 0.01;
-        // double h10p = maxHeight * 0.1;
-        double w10p = maxWidth * 0.1;
-        double w1p = maxWidth * 0.01;
-        // double widthOfWid = w10p * 3;
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      double maxHeight = constraints.maxHeight;
+      double maxWidth = constraints.maxWidth;
+      double h1p = maxHeight * 0.01;
+      // double h10p = maxHeight * 0.1;
+      double w10p = maxWidth * 0.1;
+      double w1p = maxWidth * 0.01;
+      // double widthOfWid = w10p * 3;
 
-        return Consumer<BookingManager>(
-          builder: (context, bmgr, child) {
-            return WillPopScope(
-              onWillPop: onWillPop,
-              child: Consumer<ChatProvider>(
-                builder: (context, mgr, child) {
-                  return Scaffold(
-                    backgroundColor: Colors.white,
-                    appBar: AppBar(
-                      automaticallyImplyLeading: false,
-                      systemOverlayStyle: const SystemUiOverlayStyle(
-                        statusBarColor: Colors.white, // background color
-                        statusBarIconBrightness: Brightness.dark, // Android
-                        statusBarBrightness: Brightness.light, // iOS
-                      ),
+      return Consumer<BookingManager>(
+        builder: (context, bmgr, child) {
+          return WillPopScope(
+            onWillPop: onWillPop,
+            child: Consumer<ChatProvider>(
+              builder: (context, mgr, child) {
+                return Scaffold(
+                  backgroundColor: Colors.white,
+                  appBar: AppBar(
+                    automaticallyImplyLeading: false,
+                    systemOverlayStyle: const SystemUiOverlayStyle(
+                      statusBarColor: Colors.white, // background color
+                      statusBarIconBrightness: Brightness.dark, // Android
+                      statusBarBrightness: Brightness.light, // iOS
+                    ),
 
-                      flexibleSpace: Container(
-                        color: Colors.white,
-                        child: Row(
-                          children: [
-                            SizedBox(width: w1p * 2),
-                            GestureDetector(
-                              onTap: () async {
-                                if (widget.isPipModeActive == true) {
-                                  PIPView.of(context)?.stopFloating();
-                                  // print("clicked 200");
-                                } else {
-                                  bool result = await onWillPop();
-                                  if (result) {
-                                    Navigator.pop(context);
-                                  }
+                    flexibleSpace: Container(
+                      color: Colors.white,
+                      child: Row(
+                        children: [
+                          SizedBox(width: w1p * 2),
+                          GestureDetector(
+                            onTap: () async {
+                              if (widget.isPipModeActive == true) {
+                                PIPView.of(context)?.stopFloating();
+                                // print("clicked 200");
+                                log("here");
+                              } else {
+                                bool result = await onWillPop();
+                                if (result) {
+                                  Navigator.pop(context);
                                 }
-                              },
-                              child: SizedBox(
-                                height: h1p * 10,
-                                width: 30,
-                                child: Image.asset(
-                                  "assets/images/back-cupertino.png",
-                                  color: Colors.black,
-                                ),
+                              }
+                            },
+                            child: SizedBox(
+                              height: h1p * 10,
+                              width: 30,
+                              child: Image.asset(
+                                "assets/images/back-cupertino.png",
+                                color: Colors.black,
                               ),
                             ),
-                            SizedBox(width: w1p * 1),
-                            Text(
-                              "Chat",
-                              style: t500_14.copyWith(color: clr444444),
-                            ),
-                            const Expanded(child: SizedBox()),
-                            // GestureDetector(
-                            //   onTap: (){
+                          ),
+                          SizedBox(width: w1p * 1),
+                          Text(
+                            "Chat",
+                            style: t500_14.copyWith(color: clr444444),
+                          ),
+                          const Expanded(child: SizedBox()),
+                          // GestureDetector(
+                          //   onTap: (){
 
-                            //   showDialog(
-                            //     context: context,
-                            //     builder: (context) => AnatomyScreen(bookingId: widget.bookId,),
-                            //
-                            //   );
-                            //
-                            //
-                            // },
-                            //   child: Padding(
-                            //     padding: const EdgeInsets.only(right:8.0),
-                            //     child: Icon(Icons.man),
-                            //   ),
-                            // ),
-                            widget.isCallAvailable == true
-                                ? SizedBox(
-                                    child: bmgr.callingLoader
-                                        ? const Center(
-                                            child: Padding(
-                                              padding: EdgeInsets.all(4.0),
-                                              child: CircularProgressIndicator(
-                                                color: Colours.toastBlue,
-                                              ),
-                                            ),
-                                          )
-                                        : InkWell(
-                                            onTap: () async {
-                                              var res =
-                                                  await getIt<BookingManager>()
-                                                      .initiateCall(
-                                                        bookingId:
-                                                            widget.bookId,
-                                                      );
-                                              if (res.status == true) {
-                                                await Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (_) => CallScreen(
-                                                      displayName:
-                                                          getIt<
-                                                                SharedPreferences
-                                                              >()
-                                                              .getString(
-                                                                StringConstants
-                                                                    .userName,
-                                                              ) ??
-                                                          "No Name",
-                                                      role: "0",
-                                                      isJoin: true,
-                                                      sessionIdleTimeoutMins:
-                                                          "40",
-                                                      sessionName: widget.appId,
-                                                      sessionPwd: 'Qwerty123',
-                                                      bookingId: widget.bookId,
-                                                    ),
-                                                  ),
-                                                );
-
-                                                Provider.of<ChatProvider>(
-                                                  context,
-                                                  listen: false,
-                                                ).listenToMessage(widget.appId);
-                                              } else {
-                                                showTopSnackBar(
-                                                  snackBarPosition:
-                                                      SnackBarPosition.top,
-                                                  padding: const EdgeInsets.all(
-                                                    30,
-                                                  ),
-                                                  Overlay.of(context),
-                                                  SuccessToast(
-                                                    maxLines: 3,
-                                                    message: res.message ?? "",
-                                                  ),
-                                                );
-                                              }
-                                            },
-                                            child: const Icon(
-                                              Icons.video_camera_front_outlined,
+                          //   showDialog(
+                          //     context: context,
+                          //     builder: (context) => AnatomyScreen(bookingId: widget.bookId,),
+                          //
+                          //   );
+                          //
+                          //
+                          // },
+                          //   child: Padding(
+                          //     padding: const EdgeInsets.only(right:8.0),
+                          //     child: Icon(Icons.man),
+                          //   ),
+                          // ),
+                          widget.isCallAvailable == true
+                              ? SizedBox(
+                                  child: bmgr.callingLoader
+                                      ? const Center(
+                                          child: Padding(
+                                            padding: EdgeInsets.all(4.0),
+                                            child: CircularProgressIndicator(
+                                              color: Colours.toastBlue,
                                             ),
                                           ),
-                                  )
-                                : const SizedBox(),
-                            SizedBox(width: w1p * 5),
-                          ],
-                        ),
+                                        )
+                                      : InkWell(
+                                          onTap: () async {
+                                            var res =
+                                                await getIt<BookingManager>()
+                                                    .initiateCall(
+                                                      bookingId: widget.bookId,
+                                                    );
+                                            if (res.status == true) {
+                                              await Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (_) => CallScreen(
+                                                    displayName:
+                                                        getIt<
+                                                              SharedPreferences
+                                                            >()
+                                                            .getString(
+                                                              StringConstants
+                                                                  .userName,
+                                                            ) ??
+                                                        "No Name",
+                                                    role: "0",
+                                                    isJoin: true,
+                                                    sessionIdleTimeoutMins:
+                                                        "40",
+                                                    sessionName: widget.appId,
+                                                    sessionPwd: 'Qwerty123',
+                                                    bookingId: widget.bookId,
+                                                  ),
+                                                ),
+                                              );
+
+                                              Provider.of<ChatProvider>(
+                                                context,
+                                                listen: false,
+                                              ).listenToMessage(widget.appId);
+                                            } else {
+                                              showTopSnackBar(
+                                                snackBarPosition:
+                                                    SnackBarPosition.top,
+                                                padding: const EdgeInsets.all(
+                                                  30,
+                                                ),
+                                                Overlay.of(context),
+                                                SuccessToast(
+                                                  maxLines: 3,
+                                                  message: res.message ?? "",
+                                                ),
+                                              );
+                                            }
+                                          },
+                                          child: const Icon(
+                                            Icons.video_camera_front_outlined,
+                                          ),
+                                        ),
+                                )
+                              : const SizedBox(),
+                          SizedBox(width: w1p * 5),
+                        ],
                       ),
                     ),
-                    body: Builder(
-                      builder: (context) {
-                        //                       final messages = mgr.messagesQ
-                        //                           .map((e) => types.Message.fromJson(e.toJson()))
-                        //                           .toList();
-                        // print(messages);
-                        //                       // setState(() {
-                        //                       _messages = messages;
-                        return Chat(
-                          inputOptions: const InputOptions(
-                            sendButtonVisibilityMode:
-                                SendButtonVisibilityMode.always,
-                          ),
-                          customBottomWidget: true == false
-                              ? InkWell(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => DoctorProfileScreen(
-                                          // specialityId: widget.specialityId,
-                                          specialityId: null,
-                                          docId: widget.docId!,
-                                        ),
+                  ),
+                  body: Builder(
+                    builder: (context) {
+                      //                       final messages = mgr.messagesQ
+                      //                           .map((e) => types.Message.fromJson(e.toJson()))
+                      //                           .toList();
+                      // print(messages);
+                      //                       // setState(() {
+                      //                       _messages = messages;
+                      return Chat(
+                        inputOptions: const InputOptions(
+                          sendButtonVisibilityMode:
+                              SendButtonVisibilityMode.always,
+                        ),
+                        customBottomWidget: true == false
+                            ? InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => DoctorProfileScreen(
+                                        // specialityId: widget.specialityId,
+                                        specialityId: null,
+                                        docId: widget.docId!,
                                       ),
-                                    );
-                                  },
-                                  child: Container(
-                                    width: w10p * 10,
-                                    // width: 343,height:32,
-                                    color: Colours.boxblue,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(18.0),
-                                      child: Center(
-                                        child: Text(
-                                          "Book Again",
-                                          style: t500_14.copyWith(
-                                            color: clr444444,
-                                            height: 1,
-                                          ),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  width: w10p * 10,
+                                  // width: 343,height:32,
+                                  color: Colours.boxblue,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(18.0),
+                                    child: Center(
+                                      child: Text(
+                                        "Book Again",
+                                        style: t500_14.copyWith(
+                                          color: clr444444,
+                                          height: 1,
                                         ),
                                       ),
                                     ),
                                   ),
-                                )
-                              : null,
-                          messages: mgr.messagesInChat.reversed
-                              .map((e) => types.Message.fromJson(e.toJson()))
-                              .toList(),
-                          onAttachmentPressed: _handleAttachmentPressed,
-                          onMessageTap: _handleMessageTap,
-                          onPreviewDataFetched: _handlePreviewDataFetched,
-                          onSendPressed: _handleSendPressed,
-                          showUserAvatars: false,
-                          isAttachmentUploading: mgr.chatUploadingLoader,
-                          showUserNames: false,
-                          isLastPage: true,
-                          user: _user,
-                          onEndReached: () async {
-                            // await getIt<ChatProvider>().loadMessages(roomId: 12);
-                          },
-                          theme: const DefaultChatTheme(
-                            // seenIcon: Text(
-                            //   'read',
-                            //   style: TextStyle(
-                            //     fontSize: 10.0,
-                            //   ),
-                            // ),
-                          ),
-                        );
-                      },
-                    ),
-                  );
-                },
-              ),
-              // ),
-            );
-          },
-        );
-      },
-    ),
+                                ),
+                              )
+                            : null,
+                        messages: mgr.messagesInChat.reversed
+                            .map((e) => types.Message.fromJson(e.toJson()))
+                            .toList(),
+                        onAttachmentPressed: _handleAttachmentPressed,
+                        onMessageTap: _handleMessageTap,
+                        onPreviewDataFetched: _handlePreviewDataFetched,
+                        onSendPressed: _handleSendPressed,
+                        showUserAvatars: false,
+                        isAttachmentUploading: mgr.chatUploadingLoader,
+                        showUserNames: false,
+                        isLastPage: true,
+                        user: _user,
+                        onEndReached: () async {
+                          // await getIt<ChatProvider>().loadMessages(roomId: 12);
+                        },
+                        theme: const DefaultChatTheme(
+                          // seenIcon: Text(
+                          //   'read',
+                          //   style: TextStyle(
+                          //     fontSize: 10.0,
+                          //   ),
+                          // ),
+                        ),
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
+            // ),
+          );
+        },
+      );
+    },
   );
 }
 

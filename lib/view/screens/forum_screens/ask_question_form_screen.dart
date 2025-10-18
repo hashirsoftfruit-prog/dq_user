@@ -76,376 +76,369 @@ class _AskFreeQuestionScreenState extends State<AskFreeQuestionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          double maxHeight = constraints.maxHeight;
-          double maxWidth = constraints.maxWidth;
-          double h1p = maxHeight * 0.01;
-          double h10p = maxHeight * 0.1;
-          double w10p = maxWidth * 0.1;
-          double w1p = maxWidth * 0.01;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        double maxHeight = constraints.maxHeight;
+        double maxWidth = constraints.maxWidth;
+        double h1p = maxHeight * 0.01;
+        double h10p = maxHeight * 0.1;
+        double w10p = maxWidth * 0.1;
+        double w1p = maxWidth * 0.01;
 
-          title(title) {
-            return Padding(
-              padding: EdgeInsets.only(
-                left: w1p * 5,
-                bottom: h1p,
-                top: h1p * 1.5,
+        title(title) {
+          return Padding(
+            padding: EdgeInsets.only(
+              left: w1p * 5,
+              bottom: h1p,
+              top: h1p * 1.5,
+            ),
+            child: Text(
+              title,
+              style: t500_13.copyWith(color: const Color(0xff474747)),
+            ),
+          );
+        }
+
+        return Consumer<HomeManager>(
+          builder: (context, mgr, child) {
+            return Scaffold(
+              // extendBody: true,
+              backgroundColor: Colors.white,
+              appBar: getIt<SmallWidgets>().appBarWidget(
+                title: AppLocalizations.of(context)!.askQuestion,
+                height: h10p,
+                width: w10p,
+                fn: () {
+                  Navigator.pop(context);
+                },
               ),
-              child: Text(
-                title,
-                style: t500_13.copyWith(color: const Color(0xff474747)),
-              ),
-            );
-          }
-
-          return Consumer<HomeManager>(
-            builder: (context, mgr, child) {
-              return Scaffold(
-                // extendBody: true,
-                backgroundColor: Colors.white,
-                appBar: getIt<SmallWidgets>().appBarWidget(
-                  title: AppLocalizations.of(context)!.askQuestion,
-                  height: h10p,
-                  width: w10p,
-                  fn: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                body: pad(
-                  child: ListView(
-                    // controller: _controller,
-                    children: [
-                      // verticalSpace(h1p*1),
-                      mgr.forumLoader == true ||
-                              mgr.forumGeneralDatamodel?.treatments == null
-                          ? const Entry(
-                              yOffset: -100,
-                              // scale: 20,
-                              delay: Duration(milliseconds: 0),
-                              duration: Duration(milliseconds: 500),
-                              curve: Curves.ease,
-                              child: Padding(
-                                padding: EdgeInsets.all(28.0),
-                                child: LogoLoader(),
-                              ),
-                            )
-                          : Entry(
-                              yOffset: -100,
-                              // scale: 20,
-                              delay: const Duration(milliseconds: 0),
-                              duration: const Duration(milliseconds: 500),
-                              curve: Curves.ease,
-                              child: Form(
-                                key: _formKey,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    widget.isVetinary == true
-                                        ? const SizedBox()
-                                        : title(
-                                            AppLocalizations.of(
-                                              context,
-                                            )!.problemAndTreatment,
+              body: pad(
+                child: ListView(
+                  // controller: _controller,
+                  children: [
+                    // verticalSpace(h1p*1),
+                    mgr.forumLoader == true ||
+                            mgr.forumGeneralDatamodel?.treatments == null
+                        ? const Entry(
+                            yOffset: -100,
+                            // scale: 20,
+                            delay: Duration(milliseconds: 0),
+                            duration: Duration(milliseconds: 500),
+                            curve: Curves.ease,
+                            child: Padding(
+                              padding: EdgeInsets.all(28.0),
+                              child: LogoLoader(),
+                            ),
+                          )
+                        : Entry(
+                            yOffset: -100,
+                            // scale: 20,
+                            delay: const Duration(milliseconds: 0),
+                            duration: const Duration(milliseconds: 500),
+                            curve: Curves.ease,
+                            child: Form(
+                              key: _formKey,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  widget.isVetinary == true
+                                      ? const SizedBox()
+                                      : title(
+                                          AppLocalizations.of(
+                                            context,
+                                          )!.problemAndTreatment,
+                                        ),
+                                  widget.isVetinary == true
+                                      ? const SizedBox()
+                                      : Padding(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: w1p * 5,
                                           ),
-                                    widget.isVetinary == true
-                                        ? const SizedBox()
-                                        : Padding(
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal: w1p * 5,
-                                            ),
-                                            child: ForumDropdown(
-                                              mgr
-                                                  .forumGeneralDatamodel!
-                                                  .treatments!,
+                                          child: ForumDropdown(
+                                            mgr
+                                                .forumGeneralDatamodel!
+                                                .treatments!,
+                                          ),
+                                        ),
+                                  // verticalSpace(h1p),
+                                  title(AppLocalizations.of(context)!.title),
+
+                                  ForumTextField(
+                                    maxLines: 1,
+                                    controller: titleC,
+                                    label: AppLocalizations.of(context)!.title,
+                                    w1p: w1p,
+                                    h1p: h1p,
+                                  ),
+                                  // verticalSpace(h1p),
+                                  title(
+                                    AppLocalizations.of(context)!.description,
+                                  ),
+
+                                  ForumTextField(
+                                    maxLines: 6,
+                                    controller: descrtiptnC,
+                                    label: AppLocalizations.of(
+                                      context,
+                                    )!.description,
+                                    w1p: w1p,
+                                    h1p: h1p,
+                                  ),
+
+                                  title(
+                                    "${AppLocalizations.of(context)!.images} ${AppLocalizations.of(context)!.optional}",
+                                  ),
+
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: w1p * 5,
+                                    ),
+                                    child: SizedBox(
+                                      height: 90,
+                                      child: SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: Colours.lightGrey,
+                                            borderRadius: BorderRadius.circular(
+                                              7,
                                             ),
                                           ),
-                                    // verticalSpace(h1p),
-                                    title(AppLocalizations.of(context)!.title),
+                                          child: Center(
+                                            child: Row(
+                                              children: [
+                                                InkWell(
+                                                  onTap: () async {
+                                                    List<XFile>? images =
+                                                        await _getImage();
+                                                    for (var img in images!) {
+                                                      // final bytes = await img.readAsBytes();
+                                                      // final String imageBase64 = base64Encode(bytes);
+                                                      getIt<HomeManager>()
+                                                          .addImages(img.path);
 
-                                    ForumTextField(
-                                      maxLines: 1,
-                                      controller: titleC,
-                                      label: AppLocalizations.of(
-                                        context,
-                                      )!.title,
-                                      w1p: w1p,
-                                      h1p: h1p,
-                                    ),
-                                    // verticalSpace(h1p),
-                                    title(
-                                      AppLocalizations.of(context)!.description,
-                                    ),
-
-                                    ForumTextField(
-                                      maxLines: 6,
-                                      controller: descrtiptnC,
-                                      label: AppLocalizations.of(
-                                        context,
-                                      )!.description,
-                                      w1p: w1p,
-                                      h1p: h1p,
-                                    ),
-
-                                    title(
-                                      "${AppLocalizations.of(context)!.images} ${AppLocalizations.of(context)!.optional}",
-                                    ),
-
-                                    Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: w1p * 5,
-                                      ),
-                                      child: SizedBox(
-                                        height: 90,
-                                        child: SingleChildScrollView(
-                                          scrollDirection: Axis.horizontal,
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              color: Colours.lightGrey,
-                                              borderRadius:
-                                                  BorderRadius.circular(7),
-                                            ),
-                                            child: Center(
-                                              child: Row(
-                                                children: [
-                                                  InkWell(
-                                                    onTap: () async {
-                                                      List<XFile>? images =
-                                                          await _getImage();
-                                                      for (var img in images!) {
-                                                        // final bytes = await img.readAsBytes();
-                                                        // final String imageBase64 = base64Encode(bytes);
-                                                        getIt<HomeManager>()
-                                                            .addImages(
-                                                              img.path,
-                                                            );
-
-                                                        // base64Images.add(imageBase64);
-                                                      }
-                                                    },
-                                                    child: SizedBox(
-                                                      height: 70,
-                                                      width: 70,
-                                                      child: Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets.symmetric(
-                                                                  horizontal: 8,
-                                                                ),
-                                                            child: SizedBox(
-                                                              width: 25,
-                                                              child: SvgPicture.asset(
-                                                                "assets/images/icon-attachment-line.svg",
+                                                      // base64Images.add(imageBase64);
+                                                    }
+                                                  },
+                                                  child: SizedBox(
+                                                    height: 70,
+                                                    width: 70,
+                                                    child: Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets.symmetric(
+                                                                horizontal: 8,
                                                               ),
+                                                          child: SizedBox(
+                                                            width: 25,
+                                                            child: SvgPicture.asset(
+                                                              "assets/images/icon-attachment-line.svg",
                                                             ),
                                                           ),
-                                                          Text(
-                                                            "Add",
-                                                            style: t400_12.copyWith(
-                                                              color:
-                                                                  const Color(
-                                                                    0xff474747,
-                                                                  ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
+                                                        ),
+                                                        Text(
+                                                          "Add",
+                                                          style: t400_12
+                                                              .copyWith(
+                                                                color:
+                                                                    const Color(
+                                                                      0xff474747,
+                                                                    ),
+                                                              ),
+                                                        ),
+                                                      ],
                                                     ),
                                                   ),
-                                                  ...mgr.forumImages
-                                                      .map(
-                                                        (e) => ImageBox(
-                                                          e,
-                                                          80,
-                                                          () {
+                                                ),
+                                                ...mgr.forumImages
+                                                    .map(
+                                                      (e) =>
+                                                          ImageBox(e, 80, () {
                                                             getIt<HomeManager>()
                                                                 .removeImage(e);
-                                                          },
-                                                        ),
-                                                      )
-                                                      .toList()
-                                                      .reversed,
-                                                ],
-                                              ),
+                                                          }),
+                                                    )
+                                                    .toList()
+                                                    .reversed,
+                                              ],
                                             ),
                                           ),
                                         ),
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             ),
-                    ],
-                  ),
-                ),
-                floatingActionButtonLocation:
-                    FloatingActionButtonLocation.endDocked,
-                floatingActionButton: InkWell(
-                  onTap: () async {
-                    String title = titleC.text;
-                    String descriptn = descrtiptnC.text;
-                    int? treatmentId = mgr.selectedForumTreatmentItem?.id;
-
-                    if (_formKey.currentState!.validate() &&
-                        treatmentId != null) {
-                      var res = await getIt<HomeManager>().submitNewForum(
-                        title: title,
-                        description: descriptn,
-                        treatmentId: treatmentId,
-                        imgs: mgr.forumImages,
-                      );
-
-                      if (res.status == true) {
-                        Navigator.pop(context, true);
-                        showTopSnackBar(
-                          Overlay.of(context),
-                          SuccessToast(maxLines: 3, message: res.message ?? ""),
-                        );
-                      } else {
-                        showTopSnackBar(
-                          Overlay.of(context),
-                          CustomSnackBar.success(
-                            backgroundColor: Colours.toastRed,
-                            maxLines: 2,
-                            message: res.message ?? "",
                           ),
-                        );
-                      }
+                  ],
+                ),
+              ),
+              floatingActionButtonLocation:
+                  FloatingActionButtonLocation.endDocked,
+              floatingActionButton: InkWell(
+                onTap: () async {
+                  String title = titleC.text;
+                  String descriptn = descrtiptnC.text;
+                  int? treatmentId = mgr.selectedForumTreatmentItem?.id;
+
+                  if (_formKey.currentState!.validate() &&
+                      treatmentId != null) {
+                    var res = await getIt<HomeManager>().submitNewForum(
+                      title: title,
+                      description: descriptn,
+                      treatmentId: treatmentId,
+                      imgs: mgr.forumImages,
+                    );
+
+                    if (res.status == true) {
+                      Navigator.pop(context, true);
+                      showTopSnackBar(
+                        Overlay.of(context),
+                        SuccessToast(maxLines: 3, message: res.message ?? ""),
+                      );
                     } else {
                       showTopSnackBar(
                         Overlay.of(context),
-                        const CustomSnackBar.success(
+                        CustomSnackBar.success(
                           backgroundColor: Colours.toastRed,
                           maxLines: 2,
-                          message: "All fields are mandatory",
+                          message: res.message ?? "",
                         ),
                       );
                     }
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 18),
-                    decoration: BoxDecoration(
-                      boxShadow: [boxShadow7],
-                      color: Colours.primaryblue,
-                      shape: BoxShape.circle,
-                    ),
-                    width: w10p * 1.7,
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Image.asset("assets/images/send-fill.png"),
-                    ),
+                  } else {
+                    showTopSnackBar(
+                      Overlay.of(context),
+                      const CustomSnackBar.success(
+                        backgroundColor: Colours.toastRed,
+                        maxLines: 2,
+                        message: "All fields are mandatory",
+                      ),
+                    );
+                  }
+                },
+                child: Container(
+                  margin: const EdgeInsets.symmetric(vertical: 18),
+                  decoration: BoxDecoration(
+                    boxShadow: [boxShadow7],
+                    color: Colours.primaryblue,
+                    shape: BoxShape.circle,
+                  ),
+                  width: w10p * 1.7,
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Image.asset("assets/images/send-fill.png"),
                   ),
                 ),
-                // Container(margin: EdgeInsets.symmetric(vertical: 18),
-                //
-                //   decoration: BoxDecoration(
-                //       boxShadow: [boxShadow7],
-                //       borderRadius: BorderRadius.circular(100),
-                //
-                //       color:Colors.white
-                //       // color:Color(0xffF0F0F0)
-                //   ),
-                //   child: Column(mainAxisSize: MainAxisSize.min,
-                //     children: [
-                //
-                //       // Padding(
-                //       //   padding: const EdgeInsets.symmetric(vertical: 18),
-                //       //   child: InkWell(onTap: ()async{
-                //       //     List<XFile>? images = await _getImage();
-                //       //     for (var img in images!) {
-                //       //
-                //       //
-                //       //       // final bytes = await img.readAsBytes();
-                //       //       // final String imageBase64 = base64Encode(bytes);
-                //       //       getIt<HomeManager>().addImages(img.path);
-                //       //
-                //       //       // base64Images.add(imageBase64);
-                //       //     }
-                //       //
-                //       //
-                //       //
-                //       //   },
-                //       //       child: Column(
-                //       //         children: [
-                //       //           Padding(
-                //       //             padding: const EdgeInsets.symmetric(horizontal: 8),
-                //       //
-                //       //             child: SizedBox(
-                //       //                 width: 25,
-                //       //                 child: SvgPicture.asset("assets/images/icon-attachment-line.svg")),
-                //       //           ),
-                //       //           Text("Photos",style: TextStyles.lstItemTxt,)
-                //       //         ],
-                //       //       )),
-                //       // ),
-                //
-                //       // verticalSpace(h1p*1),
-                //       InkWell(
-                //         onTap: ()async{
-                //
-                //           String title = titleC.text;
-                //           String descriptn = descrtiptnC.text;
-                //           int? treatmentId = mgr.selectedForumTreatmentItem?.id;
-                //
-                //
-                //           if(_formKey.currentState!.validate() && treatmentId !=null ) {
-                //             var res = await getIt<HomeManager>().submitNewForum(
-                //                 title: title,
-                //                 description: descriptn,
-                //                 treatmentId: treatmentId,
-                //                 imgs: mgr.forumImages);
-                //
-                //             if(res.status==true){
-                //   Navigator.pop(context,true);
-                //               showTopSnackBar(
-                //                   Overlay.of(context),
-                //                   SuccessToast(maxLines:3,
-                //                     message:
-                //                     res.message ?? "",
-                //                   ));
-                //             }else{
-                //
-                //               showTopSnackBar(
-                //                   Overlay.of(context),
-                //                   CustomSnackBar.success(backgroundColor:Colours.toastRed,maxLines:2,
-                //                     message:
-                //                     res.message ?? "",
-                //                   ));
-                //             }
-                //           }else{
-                //             showTopSnackBar(
-                //                 Overlay.of(context),
-                //                 CustomSnackBar.success(backgroundColor:Colours.toastRed,maxLines:2,
-                //                   message:
-                //                   "All fields are mandatory",
-                //                 ));
-                //           }
-                //
-                //           },
-                //         child: Container(
-                //           decoration: BoxDecoration(
-                //               color:Colours.primaryblue,
-                //               shape: BoxShape.circle),
-                //           width: w10p*1.7,
-                //           child: Padding(
-                //             padding: const EdgeInsets.all(20.0),
-                //             child: Image.asset("assets/images/send-fill.png"),
-                //           ),),
-                //       ),
-                //     ],
-                //   ),
-                // ),
-              );
-            },
-          );
-        },
-      ),
+              ),
+              // Container(margin: EdgeInsets.symmetric(vertical: 18),
+              //
+              //   decoration: BoxDecoration(
+              //       boxShadow: [boxShadow7],
+              //       borderRadius: BorderRadius.circular(100),
+              //
+              //       color:Colors.white
+              //       // color:Color(0xffF0F0F0)
+              //   ),
+              //   child: Column(mainAxisSize: MainAxisSize.min,
+              //     children: [
+              //
+              //       // Padding(
+              //       //   padding: const EdgeInsets.symmetric(vertical: 18),
+              //       //   child: InkWell(onTap: ()async{
+              //       //     List<XFile>? images = await _getImage();
+              //       //     for (var img in images!) {
+              //       //
+              //       //
+              //       //       // final bytes = await img.readAsBytes();
+              //       //       // final String imageBase64 = base64Encode(bytes);
+              //       //       getIt<HomeManager>().addImages(img.path);
+              //       //
+              //       //       // base64Images.add(imageBase64);
+              //       //     }
+              //       //
+              //       //
+              //       //
+              //       //   },
+              //       //       child: Column(
+              //       //         children: [
+              //       //           Padding(
+              //       //             padding: const EdgeInsets.symmetric(horizontal: 8),
+              //       //
+              //       //             child: SizedBox(
+              //       //                 width: 25,
+              //       //                 child: SvgPicture.asset("assets/images/icon-attachment-line.svg")),
+              //       //           ),
+              //       //           Text("Photos",style: TextStyles.lstItemTxt,)
+              //       //         ],
+              //       //       )),
+              //       // ),
+              //
+              //       // verticalSpace(h1p*1),
+              //       InkWell(
+              //         onTap: ()async{
+              //
+              //           String title = titleC.text;
+              //           String descriptn = descrtiptnC.text;
+              //           int? treatmentId = mgr.selectedForumTreatmentItem?.id;
+              //
+              //
+              //           if(_formKey.currentState!.validate() && treatmentId !=null ) {
+              //             var res = await getIt<HomeManager>().submitNewForum(
+              //                 title: title,
+              //                 description: descriptn,
+              //                 treatmentId: treatmentId,
+              //                 imgs: mgr.forumImages);
+              //
+              //             if(res.status==true){
+              //   Navigator.pop(context,true);
+              //               showTopSnackBar(
+              //                   Overlay.of(context),
+              //                   SuccessToast(maxLines:3,
+              //                     message:
+              //                     res.message ?? "",
+              //                   ));
+              //             }else{
+              //
+              //               showTopSnackBar(
+              //                   Overlay.of(context),
+              //                   CustomSnackBar.success(backgroundColor:Colours.toastRed,maxLines:2,
+              //                     message:
+              //                     res.message ?? "",
+              //                   ));
+              //             }
+              //           }else{
+              //             showTopSnackBar(
+              //                 Overlay.of(context),
+              //                 CustomSnackBar.success(backgroundColor:Colours.toastRed,maxLines:2,
+              //                   message:
+              //                   "All fields are mandatory",
+              //                 ));
+              //           }
+              //
+              //           },
+              //         child: Container(
+              //           decoration: BoxDecoration(
+              //               color:Colours.primaryblue,
+              //               shape: BoxShape.circle),
+              //           width: w10p*1.7,
+              //           child: Padding(
+              //             padding: const EdgeInsets.all(20.0),
+              //             child: Image.asset("assets/images/send-fill.png"),
+              //           ),),
+              //       ),
+              //     ],
+              //   ),
+              // ),
+            );
+          },
+        );
+      },
     );
   }
 }

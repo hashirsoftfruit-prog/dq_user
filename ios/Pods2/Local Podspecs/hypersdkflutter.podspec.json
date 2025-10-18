@@ -1,0 +1,28 @@
+{
+  "name": "hypersdkflutter",
+  "version": "4.0.33",
+  "summary": "Flutter plugin for Juspay SDK",
+  "description": "Flutter plugin for juspay SDK.",
+  "homepage": "https://juspay.in/",
+  "license": {
+    "file": "../LICENSE"
+  },
+  "authors": {
+    "Juspay": "support@juspay.in"
+  },
+  "source": {
+    "path": "."
+  },
+  "source_files": "Classes/**/*",
+  "dependencies": {
+    "Flutter": [],
+    "HyperSDK": [
+      "2.2.4"
+    ]
+  },
+  "platforms": {
+    "ios": "12.0"
+  },
+  "swift_versions": "5.0",
+  "swift_version": "5.0"
+}

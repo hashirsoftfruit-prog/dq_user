@@ -74,22 +74,28 @@ class _ScheduledBookingScreenState extends State<ScheduledBookingScreen>
   var scollCntr = ScrollController();
   @override
   void initState() {
-    getIt<BookingManager>().getPatientsDetailsList();
-    // getIt<BookingManager>().getBillDetails(spID:widget.specialityId ,type:widget.isScheduledOnline==true?1:2,doctorId: widget.doctorDetails?.id );
-    // if(widget.docsData.packageAvailability!=true){}
-    getIt<BookingManager>().getPackages(
-      widget.specialityId,
-      widget.subSpecialityIdForPsychology,
-    );
-    Future.delayed(Duration.zero, () async {
-      getIt<BookingManager>().setPrefferedLanguage("English");
-      getIt<BookingManager>().setPrefferedDocGender(
-        StringConstants.dPrefNoPref,
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getIt<BookingManager>().getPatientsDetailsList();
+      getIt<BookingManager>().setBackCalled(false);
+      getIt<BookingManager>().setPaymentInitiated(false);
+      // getIt<BookingManager>().getBillDetails(spID:widget.specialityId ,type:widget.isScheduledOnline==true?1:2,doctorId: widget.doctorDetails?.id );
+      // if(widget.docsData.packageAvailability!=true){}
+      getIt<BookingManager>().getPackages(
+        widget.specialityId,
+        widget.subSpecialityIdForPsychology,
       );
     });
-    try {
-      getBillDetails();
+    Future.delayed(Duration.zero, () async {
       WidgetsBinding.instance.addPostFrameCallback((_) {
+        getIt<BookingManager>().setPrefferedLanguage("English");
+        getIt<BookingManager>().setPrefferedDocGender(
+          StringConstants.dPrefNoPref,
+        );
+      });
+    });
+    try {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        getBillDetails();
         getIt<BookingManager>().resetPaymentState();
       });
     } on Exception catch (e) {
@@ -160,9 +166,11 @@ class _ScheduledBookingScreenState extends State<ScheduledBookingScreen>
         final bookingManager = getIt<BookingManager>();
         final paymentStatus =
             bookingManager.isPaymentOnProcess || bookingManager.proceedLoader;
+        final isBackCalled = bookingManager.isBackCalled;
+        final isPaymentInitiated = bookingManager.isPaymentFlowInitiated;
 
         // If a payment is in progress
-        if (paymentStatus) {
+        if (paymentStatus && !isBackCalled) {
           if (Platform.isAndroid) {
             final backPressResult = await PaymentService.instance.hyperSDK
                 .onBackPress();
@@ -181,11 +189,24 @@ class _ScheduledBookingScreenState extends State<ScheduledBookingScreen>
             }
           }
           return; // Don't pop automatically
+        } else {
+          log("message is no payment is on process or loading");
+
+          log(" ${!isPaymentInitiated} && $Platform.isIOS && ${!isBackCalled}");
+          // If no payment is in progress → normal back navigation
+          bookingManager.disposeBillScreen();
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (context.mounted &&
+                !isPaymentInitiated &&
+                !Platform.isIOS &&
+                !isBackCalled) {
+              log("message is called back from here");
+              getIt<BookingManager>().setBackCalled(true);
+              Navigator.of(context).pop();
+            }
+          });
+          return; // Don't pop automatically
         }
-        log("message is no payment is on process or loading");
-        // If no payment is in progress → normal back navigation
-        bookingManager.disposeBillScreen();
-        if (context.mounted) Navigator.of(context).pop();
       },
       child: LayoutBuilder(
         builder: (context, constraints) {

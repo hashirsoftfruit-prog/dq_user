@@ -70,153 +70,151 @@ class _ForumListScreenState extends State<ForumListScreen> {
 
         return Consumer<HomeManager>(
           builder: (context, mgr, child) {
-            return SafeArea(
-              child: Scaffold(
-                // extendBody: true,
-                backgroundColor: Colors.white,
-                appBar: getIt<SmallWidgets>().appBarWidget(
-                  title: AppLocalizations.of(context)!.forum,
-                  height: h10p,
-                  width: w10p,
-                  fn: () {
-                    Navigator.pop(context);
+            return Scaffold(
+              // extendBody: true,
+              backgroundColor: Colors.white,
+              appBar: getIt<SmallWidgets>().appBarWidget(
+                title: AppLocalizations.of(context)!.forum,
+                height: h10p,
+                width: w10p,
+                fn: () {
+                  Navigator.pop(context);
+                },
+                trailWidget: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const ForumSearchScreen(2),
+                      ),
+                    );
                   },
-                  trailWidget: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const ForumSearchScreen(2),
-                        ),
-                      );
-                    },
-                    child: Text(
-                      AppLocalizations.of(context)!.search,
-                      style: t400_14.copyWith(color: clr2D2D2D),
-                    ),
+                  child: Text(
+                    AppLocalizations.of(context)!.search,
+                    style: t400_14.copyWith(color: clr2D2D2D),
                   ),
                 ),
-                body: RefreshIndicator(
-                  onRefresh: () async {
-                    getIt<HomeManager>().getForumList(isRefresh: true);
-                  },
-                  child: ListView(
-                    controller: _controller,
-                    children: [
-                      verticalSpace(h1p),
+              ),
+              body: RefreshIndicator(
+                onRefresh: () async {
+                  getIt<HomeManager>().getForumList(isRefresh: true);
+                },
+                child: ListView(
+                  controller: _controller,
+                  children: [
+                    verticalSpace(h1p),
 
-                      // Padding(
-                      //   padding:  EdgeInsets.symmetric(horizontal: w1p*5,vertical:h1p*2 ),
-                      //   child: Text("Answer the patients questions to show your expertise.",style: TextStyles.medicalRecTxt1,),
-                      // ),
-                      mgr.forumLoader == true
-                          ? const Entry(
-                              yOffset: -100,
-                              // scale: 20,
-                              delay: Duration(milliseconds: 0),
-                              duration: Duration(milliseconds: 500),
-                              curve: Curves.ease,
-                              child: Padding(
-                                padding: EdgeInsets.all(28.0),
-                                child: LogoLoader(),
-                              ),
-                            )
-                          : Entry(
-                              xOffset: -1000,
-                              // scale: 20,
+                    // Padding(
+                    //   padding:  EdgeInsets.symmetric(horizontal: w1p*5,vertical:h1p*2 ),
+                    //   child: Text("Answer the patients questions to show your expertise.",style: TextStyles.medicalRecTxt1,),
+                    // ),
+                    mgr.forumLoader == true
+                        ? const Entry(
+                            yOffset: -100,
+                            // scale: 20,
+                            delay: Duration(milliseconds: 0),
+                            duration: Duration(milliseconds: 500),
+                            curve: Curves.ease,
+                            child: Padding(
+                              padding: EdgeInsets.all(28.0),
+                              child: LogoLoader(),
+                            ),
+                          )
+                        : Entry(
+                            xOffset: -1000,
+                            // scale: 20,
+                            delay: const Duration(milliseconds: 0),
+                            duration: const Duration(milliseconds: 700),
+                            curve: Curves.ease,
+                            child: Entry(
+                              opacity: .5,
+                              // angle: 3.1415,
                               delay: const Duration(milliseconds: 0),
-                              duration: const Duration(milliseconds: 700),
-                              curve: Curves.ease,
-                              child: Entry(
-                                opacity: .5,
-                                // angle: 3.1415,
-                                delay: const Duration(milliseconds: 0),
-                                duration: const Duration(milliseconds: 1500),
-                                curve: Curves.decelerate,
-                                child:
-                                    mgr.publicForumListModel?.publicForums !=
-                                            null &&
-                                        mgr
+                              duration: const Duration(milliseconds: 1500),
+                              curve: Curves.decelerate,
+                              child:
+                                  mgr.publicForumListModel?.publicForums !=
+                                          null &&
+                                      mgr
+                                          .publicForumListModel!
+                                          .publicForums!
+                                          .isNotEmpty
+                                  ? Column(
+                                      children: mgr.publicForumListModel!.publicForums!.map((
+                                        e,
+                                      ) {
+                                        var i = mgr
                                             .publicForumListModel!
                                             .publicForums!
-                                            .isNotEmpty
-                                    ? Column(
-                                        children: mgr.publicForumListModel!.publicForums!.map((
-                                          e,
-                                        ) {
-                                          var i = mgr
-                                              .publicForumListModel!
-                                              .publicForums!
-                                              .indexOf(e);
+                                            .indexOf(e);
 
-                                          return Column(
-                                            children: [
-                                              InkWell(
-                                                onTap: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (_) =>
-                                                          ForumDetailsScreen(
-                                                            forumId: e.id!,
+                                        return Column(
+                                          children: [
+                                            InkWell(
+                                              onTap: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (_) =>
+                                                        ForumDetailsScreen(
+                                                          forumId: e.id!,
+                                                        ),
+                                                  ),
+                                                );
+                                              },
+                                              child: ForumListItem2(
+                                                isVetinary: false,
+                                                h1p: h1p,
+                                                w1p: w1p,
+                                                pf: e,
+                                              ),
+                                            ),
+                                            i ==
+                                                        mgr
+                                                                .publicForumListModel!
+                                                                .publicForums!
+                                                                .length -
+                                                            1 &&
+                                                    mgr
+                                                            .publicForumListModel!
+                                                            .next !=
+                                                        null
+                                                ? Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                          8.0,
+                                                        ),
+                                                    child: Center(
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                            strokeWidth: 5,
+                                                            color: Colours
+                                                                .primaryblue
+                                                                .withOpacity(
+                                                                  0.8,
+                                                                ),
                                                           ),
                                                     ),
-                                                  );
-                                                },
-                                                child: ForumListItem2(
-                                                  isVetinary: false,
-                                                  h1p: h1p,
-                                                  w1p: w1p,
-                                                  pf: e,
-                                                ),
-                                              ),
-                                              i ==
-                                                          mgr
-                                                                  .publicForumListModel!
-                                                                  .publicForums!
-                                                                  .length -
-                                                              1 &&
-                                                      mgr
-                                                              .publicForumListModel!
-                                                              .next !=
-                                                          null
-                                                  ? Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                            8.0,
-                                                          ),
-                                                      child: Center(
-                                                        child:
-                                                            CircularProgressIndicator(
-                                                              strokeWidth: 5,
-                                                              color: Colours
-                                                                  .primaryblue
-                                                                  .withOpacity(
-                                                                    0.8,
-                                                                  ),
-                                                            ),
-                                                      ),
-                                                    )
-                                                  : const SizedBox(),
-                                            ],
-                                          );
-                                        }).toList(),
-                                      )
-                                    : Padding(
-                                        padding: const EdgeInsets.all(28.0),
-                                        child: Center(
-                                          child: Text(
-                                            "Forums not available",
-                                            style:
-                                                TextStyles.notAvailableTxtStyle,
-                                            textAlign: TextAlign.center,
-                                          ),
+                                                  )
+                                                : const SizedBox(),
+                                          ],
+                                        );
+                                      }).toList(),
+                                    )
+                                  : Padding(
+                                      padding: const EdgeInsets.all(28.0),
+                                      child: Center(
+                                        child: Text(
+                                          "Forums not available",
+                                          style:
+                                              TextStyles.notAvailableTxtStyle,
+                                          textAlign: TextAlign.center,
                                         ),
                                       ),
-                              ),
+                                    ),
                             ),
-                    ],
-                  ),
+                          ),
+                  ],
                 ),
               ),
             );

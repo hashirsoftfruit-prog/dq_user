@@ -55,6 +55,7 @@ class _BookingScreenState extends State<BookingScreen>
   var scollCntr = ScrollController();
   final _scrollController = ScrollController();
   dynamic billResponse;
+  bool backFromButton = false;
   // void scrollToSelectedItem(int index) {
   //   // Calculate the offset
   //   double offset = index * 80.0; // Approximate height of each item
@@ -67,6 +68,7 @@ class _BookingScreenState extends State<BookingScreen>
   @override
   void initState() {
     initFns();
+    backFromButton = false;
     Future.delayed(Duration.zero, () async {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         getIt<BookingManager>().setPrefferedLanguage(
@@ -353,53 +355,51 @@ class _BookingScreenState extends State<BookingScreen>
         // }
 
         return PopScope(
-          canPop: false, // We'll handle the logic manually
+          canPop: false,
           onPopInvokedWithResult: (didPop, result) async {
             final bookingManager = getIt<BookingManager>();
-            final paymentStatus =
+
+            final bool isPaymentInProgress =
                 bookingManager.isPaymentOnProcess ||
                 bookingManager.proceedLoader;
-            final isBackCalled = bookingManager.isBackCalled;
-            final isPaymentInitiated = bookingManager.isPaymentFlowInitiated;
+            final bool isBackCalled = bookingManager.isBackCalled;
+            final bool isPaymentInitiated =
+                bookingManager.isPaymentFlowInitiated;
 
-            // If a payment is in progress
-            if (paymentStatus && !isBackCalled) {
+            // 🧾 Handle payment in progress
+            if (isPaymentInProgress && !isBackCalled) {
               if (Platform.isAndroid) {
                 final backPressResult = await PaymentService.instance.hyperSDK
                     .onBackPress();
-                log(
-                  "message is Back press status from HyperSDK: $backPressResult",
-                );
 
-                // If SDK allows back navigation
+                log("🔙 HyperSDK back press result: $backPressResult");
+
                 if (backPressResult.toLowerCase() == "true") {
+                  log("✅ Back press allowed — disposing bill screen");
                   bookingManager.disposeBillScreen();
-                  // if (context.mounted) Navigator.of(context).pop();
-                  Navigator.of(context).pop();
+                  if (context.mounted) Navigator.of(context).pop();
                 } else {
-                  // Block back press while payment in progress
-                  log(
-                    "message is Back press blocked due to ongoing payment or loading",
-                  );
+                  log("🚫 Back press blocked — payment still in progress");
                 }
               }
-              return; // Don't pop automatically
-            } else {
-              log("message is no payment is on process or loading");
-              // If no payment is in progress → normal back navigation
-              bookingManager.disposeBillScreen();
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                log("message is called back from here");
-                if (context.mounted &&
-                    !isPaymentInitiated &&
-                    !Platform.isIOS &&
-                    !isBackCalled) {
-                  getIt<BookingManager>().setBackCalled(true);
-                  Navigator.of(context).pop();
-                }
-              });
-              return; // Don't pop automatically
+              return; // Don’t auto-pop
             }
+
+            // 🧾 No payment in progress — normal back navigation
+            log("↩️ No active payment, proceeding with back navigation");
+            bookingManager.disposeBillScreen();
+
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (context.mounted &&
+                  !isPaymentInitiated &&
+                  !Platform.isIOS &&
+                  !isBackCalled &&
+                  !backFromButton) {
+                bookingManager.setBackCalled(true);
+                log("🔙 Navigating back from bill screen");
+                Navigator.of(context).pop();
+              }
+            });
           },
 
           child: Consumer<BookingManager>(
@@ -436,6 +436,9 @@ class _BookingScreenState extends State<BookingScreen>
                                     const Spacer(),
                                     GestureDetector(
                                       onTap: () {
+                                        setState(() {
+                                          backFromButton = true;
+                                        });
                                         Navigator.pop(context);
                                         // Navigator.popUntil(context, ModalRoute.withName(RouteNames.home));
                                       },

@@ -39,84 +39,80 @@ class SearchChooseScreen extends StatelessWidget {
         double w10p = maxWidth * 0.1;
         double w1p = maxWidth * 0.01;
 
-        return SafeArea(
-          child: Scaffold(
-            resizeToAvoidBottomInset: true,
-            backgroundColor: Colors.white,
-            appBar: get.appBarWidget(
-              title: "",
-              height: h10p,
-              width: w10p,
-              fn: () {
-                Navigator.pop(context);
-              },
-            ),
-            body: Entry(
-              xOffset: 800,
-              // scale: 20,
-              delay: const Duration(milliseconds: 100),
-              duration: const Duration(milliseconds: 900),
-              curve: Curves.ease,
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  pad(
-                    horizontal: w1p * 6,
-                    vertical: h1p * 2,
-                    child: Row(
-                      children: [
-                        Text(
-                          AppLocalizations.of(
+        return Scaffold(
+          resizeToAvoidBottomInset: true,
+          backgroundColor: Colors.white,
+          appBar: get.appBarWidget(
+            title: "",
+            height: h10p,
+            width: w10p,
+            fn: () {
+              Navigator.pop(context);
+            },
+          ),
+          body: Entry(
+            xOffset: 800,
+            // scale: 20,
+            delay: const Duration(milliseconds: 100),
+            duration: const Duration(milliseconds: 900),
+            curve: Curves.ease,
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                pad(
+                  horizontal: w1p * 6,
+                  vertical: h1p * 2,
+                  child: Row(
+                    children: [
+                      Text(
+                        AppLocalizations.of(
+                          context,
+                        )!.chooseWhatAreYouSearchingFor,
+                        style: t500_16.copyWith(color: clr444444),
+                      ),
+                    ],
+                  ),
+                ),
+                BoxWidget(
+                  color: const Color(0xffF68629),
+                  h1p: h1p,
+                  w1p: w1p,
+                  indx: 0,
+                  txt: AppLocalizations.of(context)!.scheduleBooking,
+                  fn: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => SearchResultScreen(
+                          title: AppLocalizations.of(context)!.scheduleBooking,
+                          type: 1,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                BoxWidget(
+                  color: const Color(0xffBD6273),
+                  fn: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => SearchResultScreen(
+                          title: AppLocalizations.of(
                             context,
-                          )!.chooseWhatAreYouSearchingFor,
-                          style: t500_16.copyWith(color: clr444444),
+                          )!.onlineConsultations,
+                          type: 2,
                         ),
-                      ],
-                    ),
-                  ),
-                  BoxWidget(
-                    color: const Color(0xffF68629),
-                    h1p: h1p,
-                    w1p: w1p,
-                    indx: 0,
-                    txt: AppLocalizations.of(context)!.clinicConsultations,
-                    fn: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => SearchResultScreen(
-                            title: AppLocalizations.of(
-                              context,
-                            )!.clinicConsultations,
-                            type: 1,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                  BoxWidget(
-                    color: const Color(0xffBD6273),
-                    fn: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => SearchResultScreen(
-                            title: AppLocalizations.of(
-                              context,
-                            )!.onlineConsultations,
-                            type: 2,
-                          ),
-                        ),
-                      );
-                    },
-                    h1p: h1p,
-                    w1p: w1p,
-                    indx: 0,
-                    txt: AppLocalizations.of(context)!.onlineConsultations,
-                  ),
-                ],
-              ),
+                      ),
+                    );
+                  },
+                  h1p: h1p,
+                  w1p: w1p,
+                  indx: 0,
+                  txt: AppLocalizations.of(context)!.onlineConsultations,
+                ),
+              ],
             ),
           ),
         );

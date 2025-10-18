@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dqapp/controller/managers/booking_manager.dart';
 import 'package:dqapp/l10n/app_localizations.dart';
 import 'package:dqapp/view/widgets/common_widgets.dart';
 import 'package:entry/entry.dart';
@@ -130,7 +132,9 @@ class SearchResultScreenState extends State<SearchResultScreen> {
       currentFocus.unfocus();
 
       getIt<SearchManager>().refreshRecentSearches(specialityTitle);
-
+      if (symptomId != null) {
+        getIt<BookingManager>().setSearchSymptomId(symptomId);
+      }
       switch (type) {
         case specialityNType:
           if (widget.type == 1) {
@@ -226,377 +230,363 @@ class SearchResultScreenState extends State<SearchResultScreen> {
         double w10p = maxWidth * 0.1;
         double w1p = maxWidth * 0.01;
 
-        return SafeArea(
-          child: Consumer<SearchManager>(
-            builder: (context, mgr, child) {
-              SearchResultsModel data =
-                  mgr.searchResultsModel ??
-                  SearchResultsModel(
-                    status: false,
-                    speciality: [],
-                    doctors: [],
-                    clinics: [],
-                    service: [],
-                    symptom: [],
-                  );
-              // var popSpecialites ;
+        return Consumer<SearchManager>(
+          builder: (context, mgr, child) {
+            SearchResultsModel data =
+                mgr.searchResultsModel ??
+                SearchResultsModel(
+                  status: false,
+                  speciality: [],
+                  doctors: [],
+                  clinics: [],
+                  service: [],
+                  symptom: [],
+                );
+            // var popSpecialites ;
 
-              return Scaffold(
-                key: _key, // Assign the key to Scaffold.
+            return Scaffold(
+              key: _key, // Assign the key to Scaffold.
 
-                drawer: LocationDrawerScreen(w1p: w1p, h1p: h1p),
-                resizeToAvoidBottomInset: true,
-                backgroundColor: Colors.white,
-                appBar: get.appBarWidget(
-                  title: widget.title,
-                  height: h10p,
-                  width: w10p,
-                  fn: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                body: Entry(
-                  xOffset: 800,
-                  // scale: 20,
-                  delay: const Duration(milliseconds: 100),
-                  duration: const Duration(milliseconds: 900),
-                  curve: Curves.ease,
-                  child: CustomScrollView(
-                    slivers: [
-                      SliverPadding(
-                        padding: EdgeInsets.symmetric(horizontal: w1p * 4),
-                        sliver: SliverList(
-                          delegate: SliverChildListDelegate([
-                            SearchBarWidget(
-                              cntrolr: keyCntrl,
-                              hnt: "Search symptoms, specialities, doctors",
-                              isClinic: widget.type == 1 ? true : false,
-                              searchFn: (val) {
-                                if (_debounce?.isActive ?? false) {
-                                  _debounce!.cancel();
-                                }
-                                _debounce = Timer(
-                                  const Duration(milliseconds: 500),
-                                  () {
-                                    // Make the API call here
-                                    onSearchChanged(val);
-                                  },
-                                );
-                              },
-                              locationFn: () {
-                                // print("222222222");
-                                _key.currentState?.openDrawer();
-                              },
-                            ),
+              drawer: LocationDrawerScreen(w1p: w1p, h1p: h1p),
+              resizeToAvoidBottomInset: true,
+              backgroundColor: Colors.white,
+              appBar: get.appBarWidget(
+                title: widget.title,
+                height: h10p,
+                width: w10p,
+                fn: () {
+                  Navigator.pop(context);
+                },
+              ),
+              body: Entry(
+                xOffset: 800,
+                // scale: 20,
+                delay: const Duration(milliseconds: 100),
+                duration: const Duration(milliseconds: 900),
+                curve: Curves.ease,
+                child: CustomScrollView(
+                  slivers: [
+                    SliverPadding(
+                      padding: EdgeInsets.symmetric(horizontal: w1p * 4),
+                      sliver: SliverList(
+                        delegate: SliverChildListDelegate([
+                          SearchBarWidget(
+                            cntrolr: keyCntrl,
+                            hnt: "Search symptoms, specialities, doctors",
+                            isClinic: widget.type == 1 ? true : false,
+                            searchFn: (val) {
+                              if (_debounce?.isActive ?? false) {
+                                _debounce!.cancel();
+                              }
+                              _debounce = Timer(
+                                const Duration(milliseconds: 500),
+                                () {
+                                  // Make the API call here
+                                  onSearchChanged(val);
+                                },
+                              );
+                            },
+                            locationFn: () {
+                              // print("222222222");
+                              _key.currentState?.openDrawer();
+                            },
+                          ),
 
-                            // get.searchBarBox(title: "Search ${widget.title}", height: h10p, width: w10p,),
-                            verticalSpace(h1p),
+                          // get.searchBarBox(title: "Search ${widget.title}", height: h10p, width: w10p,),
+                          verticalSpace(h1p),
 
-                            data.status == false &&
-                                    mgr.searchSuggestions.isNotEmpty
-                                ? Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          getHead(
-                                            AppLocalizations.of(
-                                              context,
-                                            )!.recentSearches,
+                          data.status == false &&
+                                  mgr.searchSuggestions.isNotEmpty
+                              ? Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        getHead(
+                                          AppLocalizations.of(
+                                            context,
+                                          )!.recentSearches,
+                                        ),
+                                        InkWell(
+                                          onTap: () {
+                                            getIt<SearchManager>()
+                                                .clearRecentSearches();
+                                          },
+                                          child: getHead(
+                                            AppLocalizations.of(context)!.clear,
                                           ),
-                                          InkWell(
-                                            onTap: () {
-                                              getIt<SearchManager>()
-                                                  .clearRecentSearches();
-                                            },
-                                            child: getHead(
-                                              AppLocalizations.of(
-                                                context,
-                                              )!.clear,
+                                        ),
+                                      ],
+                                    ),
+                                    Column(
+                                      children: mgr.searchSuggestions
+                                          .map(
+                                            (e) => InkWell(
+                                              onTap: () {
+                                                keyCntrl.text = e;
+
+                                                getIt<SearchManager>()
+                                                    .searchApi(
+                                                      searchKey: e,
+                                                      consultType: widget.type,
+                                                    );
+                                              },
+                                              child: getSuggestionTxt(e),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                      Column(
-                                        children: mgr.searchSuggestions
-                                            .map(
-                                              (e) => InkWell(
-                                                onTap: () {
-                                                  keyCntrl.text = e;
+                                          )
+                                          .toList(),
+                                    ),
+                                  ],
+                                )
+                              : const SizedBox(),
 
-                                                  getIt<SearchManager>()
-                                                      .searchApi(
-                                                        searchKey: e,
-                                                        consultType:
-                                                            widget.type,
-                                                      );
-                                                },
-                                                child: getSuggestionTxt(e),
+                          data.speciality!.isNotEmpty
+                              ? Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    getHead(
+                                      AppLocalizations.of(
+                                        context,
+                                      )!.specialities,
+                                    ),
+                                    SizedBox(
+                                      width: maxWidth,
+                                      child: Column(
+                                        // semanticChildCount: 4,
+                                        //   shrinkWrap: true,physics: NeverScrollableScrollPhysics(),gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(childAspectRatio: 0.85,
+                                        //   crossAxisCount: 4)
+                                        //   // crossAxisCount: 4,
+                                        //   ,
+                                        children: List.generate(
+                                          data.speciality!.length,
+                                          (index) {
+                                            String title =
+                                                data.speciality?[index].title ??
+                                                "";
+                                            String img =
+                                                data.speciality?[index].image ??
+                                                "";
+                                            int id =
+                                                data.speciality![index].id!;
+
+                                            // var subtitel = popSpecialites.subcategory![index].title;
+                                            return InkWell(
+                                              highlightColor:
+                                                  Colors.transparent,
+                                              splashColor: Colors.transparent,
+                                              onTap: () async {
+                                                fn(
+                                                  specialityId: id,
+                                                  specialityTitle: title,
+                                                  categoryId: null,
+                                                  type: specialityNType,
+                                                  subSpecialityId: null,
+                                                );
+                                              },
+                                              child: SearchResItem(
+                                                w1p: w1p,
+                                                h1p: h1p,
+                                                title: title,
+                                                img: img,
                                               ),
-                                            )
-                                            .toList(),
-                                      ),
-                                    ],
-                                  )
-                                : const SizedBox(),
-
-                            data.speciality!.isNotEmpty
-                                ? Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      getHead(
-                                        AppLocalizations.of(
-                                          context,
-                                        )!.specialities,
-                                      ),
-                                      SizedBox(
-                                        width: maxWidth,
-                                        child: Column(
-                                          // semanticChildCount: 4,
-                                          //   shrinkWrap: true,physics: NeverScrollableScrollPhysics(),gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(childAspectRatio: 0.85,
-                                          //   crossAxisCount: 4)
-                                          //   // crossAxisCount: 4,
-                                          //   ,
-                                          children: List.generate(
-                                            data.speciality!.length,
-                                            (index) {
-                                              String title =
-                                                  data
-                                                      .speciality?[index]
-                                                      .title ??
-                                                  "";
-                                              String img =
-                                                  data
-                                                      .speciality?[index]
-                                                      .image ??
-                                                  "";
-                                              int id =
-                                                  data.speciality![index].id!;
-
-                                              // var subtitel = popSpecialites.subcategory![index].title;
-                                              return InkWell(
-                                                highlightColor:
-                                                    Colors.transparent,
-                                                splashColor: Colors.transparent,
-                                                onTap: () async {
-                                                  fn(
-                                                    specialityId: id,
-                                                    specialityTitle: title,
-                                                    categoryId: null,
-                                                    type: specialityNType,
-                                                    subSpecialityId: null,
-                                                  );
-                                                },
-                                                child: SearchResItem(
-                                                  w1p: w1p,
-                                                  h1p: h1p,
-                                                  title: title,
-                                                  img: img,
-                                                ),
-                                              );
-                                            },
-                                          ),
+                                            );
+                                          },
                                         ),
                                       ),
-                                    ],
-                                  )
-                                : const SizedBox(),
+                                    ),
+                                  ],
+                                )
+                              : const SizedBox(),
 
-                            data.symptom!.isNotEmpty
-                                ? Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      getHead(
-                                        AppLocalizations.of(context)!.symptoms,
-                                      ),
-                                      SizedBox(
-                                        width: maxWidth,
-                                        child: Column(
-                                          // semanticChildCount: 4,
-                                          //   shrinkWrap: true,
-                                          //   physics: NeverScrollableScrollPhysics(),
-                                          // gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(childAspectRatio: 0.85,
-                                          // crossAxisCount: 3)
-                                          // crossAxisCount: 4,
-                                          children: List.generate(
-                                            data.symptom!.length,
-                                            (index) {
-                                              String title =
-                                                  data.symptom?[index].title ??
-                                                  "";
-                                              String img =
-                                                  data.symptom?[index].image ??
-                                                  "";
-                                              int id = data.symptom![index].id!;
+                          data.symptom!.isNotEmpty
+                              ? Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    getHead(
+                                      AppLocalizations.of(context)!.symptoms,
+                                    ),
+                                    SizedBox(
+                                      width: maxWidth,
+                                      child: Column(
+                                        // semanticChildCount: 4,
+                                        //   shrinkWrap: true,
+                                        //   physics: NeverScrollableScrollPhysics(),
+                                        // gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(childAspectRatio: 0.85,
+                                        // crossAxisCount: 3)
+                                        // crossAxisCount: 4,
+                                        children: List.generate(
+                                          data.symptom!.length,
+                                          (index) {
+                                            String title =
+                                                data.symptom?[index].title ??
+                                                "";
+                                            String img =
+                                                data.symptom?[index].image ??
+                                                "";
+                                            int id = data.symptom![index].id!;
 
-                                              // var subtitel = popSpecialites.subcategory![index].title;
-                                              return InkWell(
-                                                highlightColor:
-                                                    Colors.transparent,
-                                                splashColor: Colors.transparent,
-                                                onTap: () async {
-                                                  fn(
-                                                    specialityId: null,
-                                                    symptomId: id,
-                                                    specialityTitle: title,
-                                                    categoryId: null,
-                                                    type: symptomsNType,
-                                                    subSpecialityId: null,
-                                                  );
-                                                },
-                                                child: SearchResItem(
-                                                  w1p: w1p,
-                                                  h1p: h1p,
-                                                  title: title,
-                                                  img: img,
-                                                ),
-                                              );
-                                            },
-                                          ),
+                                            // var subtitel = popSpecialites.subcategory![index].title;
+                                            return InkWell(
+                                              highlightColor:
+                                                  Colors.transparent,
+                                              splashColor: Colors.transparent,
+                                              onTap: () async {
+                                                fn(
+                                                  specialityId: null,
+                                                  symptomId: id,
+                                                  specialityTitle: title,
+                                                  categoryId: null,
+                                                  type: symptomsNType,
+                                                  subSpecialityId: null,
+                                                );
+                                              },
+                                              child: SearchResItem(
+                                                w1p: w1p,
+                                                h1p: h1p,
+                                                title: title,
+                                                img: img,
+                                              ),
+                                            );
+                                          },
                                         ),
                                       ),
-                                    ],
-                                  )
-                                : const SizedBox(),
+                                    ),
+                                  ],
+                                )
+                              : const SizedBox(),
 
-                            data.doctors!.isNotEmpty
-                                ? Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      getHead(
-                                        AppLocalizations.of(context)!.doctors,
-                                      ),
-                                      SizedBox(
-                                        width: maxWidth,
-                                        child: Column(
-                                          // semanticChildCount: 4,
-                                          //   shrinkWrap: true,
-                                          //   physics: NeverScrollableScrollPhysics(),
-                                          // gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(childAspectRatio: 0.85,
-                                          // crossAxisCount: 3)
-                                          // crossAxisCount: 4,
-                                          children: List.generate(
-                                            data.doctors!.length,
-                                            (index) {
-                                              String name =
-                                                  '${data.doctors?[index].firstName} ${data.doctors?[index].lastName}';
-                                              String img =
-                                                  data.doctors?[index].image ??
-                                                  "";
-                                              int id = data.doctors![index].id!;
-                                              String type = data
-                                                  .doctors![index]
-                                                  .qualification!;
-                                              String? experience =
-                                                  data
-                                                      .doctors![index]
-                                                      .experience ??
-                                                  '';
+                          data.doctors!.isNotEmpty
+                              ? Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    getHead(
+                                      AppLocalizations.of(context)!.doctors,
+                                    ),
+                                    SizedBox(
+                                      width: maxWidth,
+                                      child: Column(
+                                        // semanticChildCount: 4,
+                                        //   shrinkWrap: true,
+                                        //   physics: NeverScrollableScrollPhysics(),
+                                        // gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(childAspectRatio: 0.85,
+                                        // crossAxisCount: 3)
+                                        // crossAxisCount: 4,
+                                        children: List.generate(
+                                          data.doctors!.length,
+                                          (index) {
+                                            String name =
+                                                '${data.doctors?[index].firstName} ${data.doctors?[index].lastName}';
+                                            String img =
+                                                data.doctors?[index].image ??
+                                                "";
+                                            int id = data.doctors![index].id!;
+                                            String type = data
+                                                .doctors![index]
+                                                .qualification!;
+                                            String? experience =
+                                                data
+                                                    .doctors![index]
+                                                    .experience ??
+                                                '';
 
-                                              // var subtitel = popSpecialites.subcategory![index].title;
-                                              return InkWell(
-                                                highlightColor:
-                                                    Colors.transparent,
-                                                splashColor: Colors.transparent,
-                                                onTap: () async {
-                                                  fn(
-                                                    specialityId: null,
-                                                    specialityTitle: name,
-                                                    categoryId: null,
-                                                    type: doctorNType,
-                                                    subSpecialityId: null,
-                                                    docId: id,
-                                                  );
-                                                },
-                                                child: DocItem(
-                                                  w1p: w1p,
-                                                  h1p: h1p,
-                                                  img: img,
-                                                  name: name,
-                                                  type: type,
-                                                  experience: experience,
-                                                ),
-                                              );
-                                            },
-                                          ),
+                                            // var subtitel = popSpecialites.subcategory![index].title;
+                                            return InkWell(
+                                              highlightColor:
+                                                  Colors.transparent,
+                                              splashColor: Colors.transparent,
+                                              onTap: () async {
+                                                fn(
+                                                  specialityId: null,
+                                                  specialityTitle: name,
+                                                  categoryId: null,
+                                                  type: doctorNType,
+                                                  subSpecialityId: null,
+                                                  docId: id,
+                                                );
+                                              },
+                                              child: DocItem(
+                                                w1p: w1p,
+                                                h1p: h1p,
+                                                img: img,
+                                                name: name,
+                                                type: type,
+                                                experience: experience,
+                                              ),
+                                            );
+                                          },
                                         ),
                                       ),
-                                    ],
-                                  )
-                                : const SizedBox(),
-                            data.clinics!.isNotEmpty
-                                ? Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      getHead(
-                                        AppLocalizations.of(context)!.clinics,
-                                      ),
-                                      SizedBox(
-                                        width: maxWidth,
-                                        child: Column(
-                                          // semanticChildCount: 4,
-                                          //   shrinkWrap: true,
-                                          //   physics: NeverScrollableScrollPhysics(),
-                                          // gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(childAspectRatio: 0.85,
-                                          // crossAxisCount: 3)
-                                          // crossAxisCount: 4,
-                                          children: List.generate(
-                                            data.clinics!.length,
-                                            (index) {
-                                              // var subtitel = popSpecialites.subcategory![index].title;
-                                              return InkWell(
-                                                highlightColor:
-                                                    Colors.transparent,
-                                                splashColor: Colors.transparent,
-                                                onTap: () async {
-                                                  fn(
-                                                    specialityId: null,
-                                                    specialityTitle: '',
-                                                    categoryId: null,
-                                                    type: clinicNType,
-                                                    subSpecialityId: null,
-                                                  );
-                                                },
-                                                child: ClinicItem(
-                                                  w1p: w1p,
-                                                  h1p: h1p,
-                                                  clinic: data.clinics![index],
-                                                ),
-                                              );
-                                            },
-                                          ),
+                                    ),
+                                  ],
+                                )
+                              : const SizedBox(),
+                          data.clinics!.isNotEmpty
+                              ? Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    getHead(
+                                      AppLocalizations.of(context)!.clinics,
+                                    ),
+                                    SizedBox(
+                                      width: maxWidth,
+                                      child: Column(
+                                        // semanticChildCount: 4,
+                                        //   shrinkWrap: true,
+                                        //   physics: NeverScrollableScrollPhysics(),
+                                        // gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(childAspectRatio: 0.85,
+                                        // crossAxisCount: 3)
+                                        // crossAxisCount: 4,
+                                        children: List.generate(
+                                          data.clinics!.length,
+                                          (index) {
+                                            // var subtitel = popSpecialites.subcategory![index].title;
+                                            return InkWell(
+                                              highlightColor:
+                                                  Colors.transparent,
+                                              splashColor: Colors.transparent,
+                                              onTap: () async {
+                                                fn(
+                                                  specialityId: null,
+                                                  specialityTitle: '',
+                                                  categoryId: null,
+                                                  type: clinicNType,
+                                                  subSpecialityId: null,
+                                                );
+                                              },
+                                              child: ClinicItem(
+                                                w1p: w1p,
+                                                h1p: h1p,
+                                                clinic: data.clinics![index],
+                                              ),
+                                            );
+                                          },
                                         ),
                                       ),
-                                    ],
-                                  )
-                                : const SizedBox(),
-                          ]),
+                                    ),
+                                  ],
+                                )
+                              : const SizedBox(),
+                        ]),
 
-                          //    pad(horizontal: w1p*6,
-                          //   child:   mgr.onlineCatLoader?CircularProgressIndicator():ListView(
-                          //
-                          //     children: [
-                          //
-                          //
-                          //     ],
-                          //
-                          //   ),
-                          // ),
-                        ),
+                        //    pad(horizontal: w1p*6,
+                        //   child:   mgr.onlineCatLoader?CircularProgressIndicator():ListView(
+                        //
+                        //     children: [
+                        //
+                        //
+                        //     ],
+                        //
+                        //   ),
+                        // ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              );
-            },
-          ),
+              ),
+            );
+          },
         );
       },
     );

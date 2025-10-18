@@ -28,7 +28,10 @@ class _OffersScreenState extends State<OffersScreen> {
   @override
   void initState() {
     super.initState();
-    getIt<HomeManager>().getOffersList();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getIt<HomeManager>().getOffersList();
+    });
+
     // _controller.addListener(_scrollListener);
   }
 

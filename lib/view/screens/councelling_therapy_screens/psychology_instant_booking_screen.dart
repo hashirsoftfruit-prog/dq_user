@@ -57,11 +57,12 @@ class _PsychologyInstantBookingScreenState
   dynamic billResponse;
 
   bool agreeTerms = true;
+  bool backFromButton = false;
   var scollCntr = ScrollController();
   @override
   void initState() {
     super.initState();
-
+    backFromButton = false;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getIt<BookingManager>().getPatientsDetailsList();
       getIt<BookingManager>().setBackCalled(false);
@@ -185,7 +186,8 @@ class _PsychologyInstantBookingScreenState
             if (context.mounted &&
                 !isPaymentInitiated &&
                 !Platform.isIOS &&
-                !isBackCalled) {
+                !isBackCalled &&
+                !backFromButton) {
               getIt<BookingManager>().setBackCalled(true);
               Navigator.of(context).pop();
             }
@@ -287,6 +289,9 @@ class _PsychologyInstantBookingScreenState
                   width: w10p,
                   title: widget.itemName ?? locale!.bookAppoinment,
                   fn: () {
+                    setState(() {
+                      backFromButton = true;
+                    });
                     Navigator.pop(context);
                   },
                 ),

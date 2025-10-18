@@ -2449,20 +2449,20 @@ class _CustomFabMenuState extends State<CustomFabMenu>
               children: [
                 tabContainer(
                   title: 'Consultation',
-                  subTitle: 'DQ Pro\'s Execlusive',
+                  subTitle: 'Expert medical advice',
                   image: 'assets/images/tab_consult_img.png',
                   index: 0,
                 ),
                 tabContainer(
-                  title: 'Counselling',
-                  subTitle: 'DQ Pro\'s Execlusive',
+                  title: 'Counseling',
+                  subTitle: 'Mental health support',
                   image: 'assets/images/tab_counselling_img.png',
                   index: 1,
                 ),
                 // tabContainer(title: 'Pet Care', icon: Icons.pets_rounded, index: 4),
                 tabContainer(
                   title: 'Ayurvedic',
-                  subTitle: 'DQ Pro\'s Execlusive',
+                  subTitle: 'Natural healing therapy',
                   image: 'assets/images/tab_ayurvedic_img.png',
                   index: 2,
                 ),

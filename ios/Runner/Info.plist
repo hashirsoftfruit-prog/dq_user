@@ -102,5 +102,19 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.ozaz.dqapp.refresh</string>
+		<string>com.ozaz.dqapp.cleanup</string>
+	</array>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>This app requires speech recognition to process user audio input for enhanced functionality.</string>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>This app may access Apple Music to provide music-related features.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app requires access to your location to provide location-based features and improve user experience.</string>
+
+
 </dict>
 </plist>

@@ -38,6 +38,7 @@ class BookingManager extends ChangeNotifier {
   List<String> medicReportFilesPaths = [];
   String? identityFilePath;
   String idNoForAgeVerification = '';
+  int? searchSymptomId;
 
   // Models used for managing data
   CouponsModel? couponModel;
@@ -112,6 +113,11 @@ class BookingManager extends ChangeNotifier {
 
   setPsychologyBookingType(val) {
     psychologyBookingType = val;
+    notifyListeners();
+  }
+
+  setSearchSymptomId(val) {
+    searchSymptomId = val;
     notifyListeners();
   }
 
@@ -575,6 +581,7 @@ class BookingManager extends ChangeNotifier {
       typeOfPsychology: typeOfPsychology,
       subSpecialityId: subspecialityId,
     );
+
     log("doctors data ${result.toJson()}");
     if (result.status == true && result.isAnyDoctorExist == true) {
       getIt<BookingManager>().setDocsData(result);
@@ -772,8 +779,9 @@ class BookingManager extends ChangeNotifier {
     //   "doctor_id":doctorId
     // };
     Map<String, dynamic> data = {
-      "speciality_id": spID == -1 ? null : spID,
+      "speciality_id": spID < 1 ? null : spID,
       "subspeciality_id": subSpecialityID,
+      // "symptom_id": searchSymptomId,
       "bill_type": type, //#If null - Instant booking, 1 - Online , 2 - Offline
       "doctor_id": doctorId,
       "consultation_category": consultationCategoryForInstantCall,
@@ -855,7 +863,9 @@ class BookingManager extends ChangeNotifier {
         : null;
 
     Map<String, dynamic> data = {
-      "speciality": specialityId == -1 ? null : specialityId,
+      "speciality": (specialityId == -1 || specialityId == 0)
+          ? null
+          : specialityId,
       "symptom_id": symptomId,
       "app_user_id": userId,
       "gender": genderPref,
@@ -1513,7 +1523,9 @@ class BookingManager extends ChangeNotifier {
     String tokn =
         getIt<SharedPreferences>().getString(StringConstants.token) ?? "";
     Map<String, dynamic> data = {
-      "speciality": specialityId == -1 ? null : specialityId,
+      "speciality": (specialityId == -1 || specialityId == 0)
+          ? null
+          : specialityId,
       "symptom_id": symptomId,
       "latitude": lat,
       "longitude": long,

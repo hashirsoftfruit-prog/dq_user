@@ -59,6 +59,7 @@ class _ScheduledBookingScreenState extends State<ScheduledBookingScreen>
     with TickerProviderStateMixin {
   final ScrollController _scrollController = ScrollController();
   dynamic billResponse;
+  bool backFromButton = false;
 
   void scrollToSelectedItem(int index) {
     // Calculate the offset
@@ -74,6 +75,7 @@ class _ScheduledBookingScreenState extends State<ScheduledBookingScreen>
   var scollCntr = ScrollController();
   @override
   void initState() {
+    backFromButton = false;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getIt<BookingManager>().getPatientsDetailsList();
       getIt<BookingManager>().setBackCalled(false);
@@ -199,7 +201,8 @@ class _ScheduledBookingScreenState extends State<ScheduledBookingScreen>
             if (context.mounted &&
                 !isPaymentInitiated &&
                 !Platform.isIOS &&
-                !isBackCalled) {
+                !isBackCalled &&
+                !backFromButton) {
               log("message is called back from here");
               getIt<BookingManager>().setBackCalled(true);
               Navigator.of(context).pop();
@@ -313,6 +316,9 @@ class _ScheduledBookingScreenState extends State<ScheduledBookingScreen>
                   width: w10p,
                   title: widget.itemName ?? locale!.bookAppoinment,
                   fn: () {
+                    setState(() {
+                      backFromButton = true;
+                    });
                     Navigator.pop(context);
                   },
                 ),

@@ -2,6 +2,11 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.ozaz.dqapp.refresh</string>
+		<string>com.ozaz.dqapp.cleanup</string>
+	</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
@@ -67,16 +72,22 @@
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>This app may access Apple Music to provide music-related features.</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>bluetoothDecription</string>
 	<key>NSCameraUsageDescription</key>
-	<string>cameraDesciption</string>
+	<string>App needs camera permission to improve user experience</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app requires access to your location to provide location-based features and improve user experience.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>We need location access to show your location</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>microphoneDesciption</string>
+	<string>App needs microphone access</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>photoLibraryDescription</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>This app requires speech recognition to process user audio input for enhanced functionality.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>
@@ -102,19 +113,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-
-	<key>BGTaskSchedulerPermittedIdentifiers</key>
-	<array>
-		<string>com.ozaz.dqapp.refresh</string>
-		<string>com.ozaz.dqapp.cleanup</string>
-	</array>
-	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>This app requires speech recognition to process user audio input for enhanced functionality.</string>
-	<key>NSAppleMusicUsageDescription</key>
-	<string>This app may access Apple Music to provide music-related features.</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>This app requires access to your location to provide location-based features and improve user experience.</string>
-
-
 </dict>
 </plist>

@@ -2815,8 +2815,10 @@ class _DashboardWidgetsState extends State<DashboardWidgets>
       await Future.delayed(const Duration(milliseconds: 300));
 
       // Move to next widget
-      setState(() {
-        currentIndex = (currentIndex + 1) % totalItemCount;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {
+          currentIndex = (currentIndex + 1) % totalItemCount;
+        });
       });
     }
   }

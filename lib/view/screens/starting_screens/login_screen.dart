@@ -160,7 +160,7 @@ class _LoginScreenState extends State<LoginScreen>
                     children: [
                       Container(
                         width: maxWidth,
-                        height: maxHeight * 0.27,
+                        height: maxHeight * 0.32,
                         decoration: BoxDecoration(
                           boxShadow: [
                             BoxShadow(

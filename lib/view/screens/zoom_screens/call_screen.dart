@@ -2,10 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+
 import 'package:dqapp/view/screens/zoom_screens/utils/jwt.dart';
 import 'package:dqapp/view/screens/zoom_screens/video_view.dart';
+import 'package:dqapp/view/theme/text_styles.dart';
 import 'package:entry/entry.dart';
-import 'package:events_emitter/events_emitter.dart';
+import 'package:flu_wake_lock/flu_wake_lock.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -15,10 +17,9 @@ import 'package:flutter_zoom_videosdk/native/zoom_videosdk_event_listener.dart';
 import 'package:flutter_zoom_videosdk/native/zoom_videosdk_user.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pip_view/pip_view.dart';
-import 'package:flu_wake_lock/flu_wake_lock.dart';
 import 'package:provider/provider.dart';
-import 'package:dqapp/view/theme/text_styles.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
+
 import '../../../controller/managers/state_manager.dart';
 import '../../../model/helper/service_locator.dart';
 import '../../theme/constants.dart';
@@ -63,6 +64,7 @@ class _CallScreenState extends State<CallScreen> {
   @override
   void dispose() {
     _fluWakeLock.disable();
+    zoom.cleanup();
 
     // zoom.leaveSession(true);
     getIt<StateManager>().setInCallStatus(false);
@@ -97,6 +99,7 @@ class _CallScreenState extends State<CallScreen> {
 
   @override
   void initState() {
+    log("session details ${widget.sessionName} and ${widget.sessionPwd}");
     requestFilePermission();
 
     _fluWakeLock.enable();
@@ -175,13 +178,16 @@ class _CallScreenState extends State<CallScreen> {
 
     useEffect(() {
       void onLeaveSession(bool isEndSession) async {
-        await zoom.leaveSession(isEndSession);
+        final status = await zoom.leaveSession(isEndSession);
+        log("message is leave session status is $status");
         if (Navigator.canPop(context)) {
           Navigator.pop(context);
+        } else {
+          log("message is can not pop from here");
         }
       }
 
-      final sessionJoinListener = eventListener.eventEmitter.addListener(
+      final sessionJoinListener = eventListener.addListener(
         EventType.onSessionJoin,
         (sessionUser) async {
           List<ZoomVideoSdkUser>? remoteUsers = await zoom.session
@@ -223,9 +229,10 @@ class _CallScreenState extends State<CallScreen> {
         },
       );
 
-      final sessionLeaveListener = eventListener.eventEmitter.addListener(
+      final sessionLeaveListener = eventListener.addListener(
         EventType.onSessionLeave,
         (data) async {
+          log("message is user leave");
           isInSession.value = false;
           users.value = <ZoomVideoSdkUser>[];
           fullScreenUser.value = null;
@@ -233,113 +240,121 @@ class _CallScreenState extends State<CallScreen> {
         },
       );
 
-      final sessionNeedPasswordListener = eventListener.eventEmitter
-          .addListener(EventType.onSessionNeedPassword, (data) async {
-            showDialog<String>(
-              context: context,
-              builder: (BuildContext context) => AlertDialog(
-                title: const Text('Session Need Password'),
-                content: const Text('Password is required'),
-                actions: <Widget>[
-                  TextButton(onPressed: () {}, child: const Text('OK')),
-                ],
-              ),
-            );
-          });
-
-      final sessionPasswordWrongListener = eventListener.eventEmitter
-          .addListener(EventType.onSessionPasswordWrong, (data) async {
-            showDialog<String>(
-              context: context,
-              builder: (BuildContext context) => AlertDialog(
-                title: const Text('Session Password Incorrect'),
-                content: const Text('Password is wrong'),
-                actions: <Widget>[
-                  TextButton(onPressed: () {}, child: const Text('OK')),
-                ],
-              ),
-            );
-          });
-
-      final userVideoStatusChangedListener = eventListener.eventEmitter
-          .addListener(EventType.onUserVideoStatusChanged, (data) async {
-            data = data as Map;
-            ZoomVideoSdkUser? mySelf = await zoom.session.getMySelf();
-            var userListJson = jsonDecode(data['changedUsers']) as List;
-            List<ZoomVideoSdkUser> userList = userListJson
-                .map((userJson) => ZoomVideoSdkUser.fromJson(userJson))
-                .toList();
-            for (var user in userList) {
-              {
-                if (user.userId == mySelf?.userId) {
-                  mySelf?.videoStatus?.isOn().then(
-                    (on) => isVideoOn.value = on,
-                  );
-                }
-              }
-            }
-            videoStatusFlag.value = !videoStatusFlag.value;
-          });
-
-      final userAudioStatusChangedListener = eventListener.eventEmitter
-          .addListener(EventType.onUserAudioStatusChanged, (data) async {
-            data = data as Map;
-            ZoomVideoSdkUser? mySelf = await zoom.session.getMySelf();
-            var userListJson = jsonDecode(data['changedUsers']) as List;
-            List<ZoomVideoSdkUser> userList = userListJson
-                .map((userJson) => ZoomVideoSdkUser.fromJson(userJson))
-                .toList();
-            for (var user in userList) {
-              {
-                if (user.userId == mySelf?.userId) {
-                  mySelf?.audioStatus?.isMuted().then(
-                    (muted) => isMuted.value = muted,
-                  );
-                }
-              }
-            }
-            audioStatusFlag.value = !audioStatusFlag.value;
-          });
-
-      final userShareStatusChangeListener = eventListener.eventEmitter
-          .addListener(EventType.onUserShareStatusChanged, (data) async {
-            data = data as Map;
-            ZoomVideoSdkUser? mySelf = await zoom.session.getMySelf();
-            ZoomVideoSdkUser shareUser = ZoomVideoSdkUser.fromJson(
-              jsonDecode(data['user'].toString()),
-            );
-
-            if (data['status'] == ShareStatus.Start) {
-              sharingUser.value = shareUser;
-              fullScreenUser.value = shareUser;
-              isSharing.value = (shareUser.userId == mySelf?.userId);
-            } else {
-              sharingUser.value = null;
-              isSharing.value = false;
-              fullScreenUser.value = mySelf;
-            }
-            userShareStatusFlag.value = !userShareStatusFlag.value;
-          });
-
-      final userJoinListener = eventListener.eventEmitter.addListener(
-        EventType.onUserJoin,
+      final sessionNeedPasswordListener = eventListener.addListener(
+        EventType.onSessionNeedPassword,
         (data) async {
-          if (!isMounted()) return;
-          data = data as Map;
-          ZoomVideoSdkUser? mySelf = await zoom.session.getMySelf();
-          var userListJson = jsonDecode(data['remoteUsers']) as List;
-          List<ZoomVideoSdkUser> remoteUserList = userListJson
-              .map((userJson) => ZoomVideoSdkUser.fromJson(userJson))
-              .toList();
-          remoteUserList.insert(0, mySelf!);
-
-          users.value = remoteUserList;
+          showDialog<String>(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              title: const Text('Session Need Password'),
+              content: const Text('Password is required'),
+              actions: <Widget>[
+                TextButton(onPressed: () {}, child: const Text('OK')),
+              ],
+            ),
+          );
         },
       );
 
-      final userLeaveListener = eventListener.eventEmitter.addListener(
+      final sessionPasswordWrongListener = eventListener.addListener(
+        EventType.onSessionPasswordWrong,
+        (data) async {
+          showDialog<String>(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              title: const Text('Session Password Incorrect'),
+              content: const Text('Password is wrong'),
+              actions: <Widget>[
+                TextButton(onPressed: () {}, child: const Text('OK')),
+              ],
+            ),
+          );
+        },
+      );
+
+      final userVideoStatusChangedListener = eventListener.addListener(
+        EventType.onUserVideoStatusChanged,
+        (data) async {
+          data = data as Map;
+          ZoomVideoSdkUser? mySelf = await zoom.session.getMySelf();
+          var userListJson = jsonDecode(data['changedUsers']) as List;
+          List<ZoomVideoSdkUser> userList = userListJson
+              .map((userJson) => ZoomVideoSdkUser.fromJson(userJson))
+              .toList();
+          for (var user in userList) {
+            {
+              if (user.userId == mySelf?.userId) {
+                mySelf?.videoStatus?.isOn().then((on) => isVideoOn.value = on);
+              }
+            }
+          }
+          videoStatusFlag.value = !videoStatusFlag.value;
+        },
+      );
+
+      final userAudioStatusChangedListener = eventListener.addListener(
+        EventType.onUserAudioStatusChanged,
+        (data) async {
+          data = data as Map;
+          ZoomVideoSdkUser? mySelf = await zoom.session.getMySelf();
+          var userListJson = jsonDecode(data['changedUsers']) as List;
+          List<ZoomVideoSdkUser> userList = userListJson
+              .map((userJson) => ZoomVideoSdkUser.fromJson(userJson))
+              .toList();
+          for (var user in userList) {
+            {
+              if (user.userId == mySelf?.userId) {
+                mySelf?.audioStatus?.isMuted().then(
+                  (muted) => isMuted.value = muted,
+                );
+              }
+            }
+          }
+          audioStatusFlag.value = !audioStatusFlag.value;
+        },
+      );
+
+      final userShareStatusChangeListener = eventListener.addListener(
+        EventType.onUserShareStatusChanged,
+        (data) async {
+          data = data as Map;
+          ZoomVideoSdkUser? mySelf = await zoom.session.getMySelf();
+          ZoomVideoSdkUser shareUser = ZoomVideoSdkUser.fromJson(
+            jsonDecode(data['user'].toString()),
+          );
+
+          if (data['status'] == ShareStatus.Start) {
+            sharingUser.value = shareUser;
+            fullScreenUser.value = shareUser;
+            isSharing.value = (shareUser.userId == mySelf?.userId);
+          } else {
+            sharingUser.value = null;
+            isSharing.value = false;
+            fullScreenUser.value = mySelf;
+          }
+          userShareStatusFlag.value = !userShareStatusFlag.value;
+        },
+      );
+
+      final userJoinListener = eventListener.addListener(EventType.onUserJoin, (
+        data,
+      ) async {
+        if (!isMounted()) return;
+        data = data as Map;
+        ZoomVideoSdkUser? mySelf = await zoom.session.getMySelf();
+        var userListJson = jsonDecode(data['remoteUsers']) as List;
+        List<ZoomVideoSdkUser> remoteUserList = userListJson
+            .map((userJson) => ZoomVideoSdkUser.fromJson(userJson))
+            .toList();
+        remoteUserList.insert(0, mySelf!);
+
+        users.value = remoteUserList;
+      });
+
+      final userLeaveListener = eventListener.addListener(
         EventType.onUserLeave,
         (data) async {
+          log("message is on user leave");
           if (!isMounted()) return;
           ZoomVideoSdkUser? mySelf = await zoom.session.getMySelf();
 
@@ -348,10 +363,12 @@ class _CallScreenState extends State<CallScreen> {
           List<ZoomVideoSdkUser> remoteUserList = remoteUserListJson
               .map((userJson) => ZoomVideoSdkUser.fromJson(userJson))
               .toList();
+          log("message is remote user list json $remoteUserListJson");
           var leftUserListJson = jsonDecode(data['leftUsers']) as List;
           List<ZoomVideoSdkUser> leftUserLis = leftUserListJson
               .map((userJson) => ZoomVideoSdkUser.fromJson(userJson))
               .toList();
+          log("message is left user list json $leftUserListJson");
           if (fullScreenUser.value != null) {
             for (var user in leftUserLis) {
               {
@@ -364,17 +381,19 @@ class _CallScreenState extends State<CallScreen> {
             fullScreenUser.value = mySelf;
           }
           if (remoteUserList.isEmpty) {
+            log("message is user is empty");
             users.value = [];
             await getIt<StateManager>().setCallEndedStatus();
             onLeaveSession(true);
           } else {
+            log("message is user is not empty");
             remoteUserList.add(mySelf!);
             users.value = [];
           }
         },
       );
 
-      final userNameChangedListener = eventListener.eventEmitter.addListener(
+      final userNameChangedListener = eventListener.addListener(
         EventType.onUserNameChanged,
         (data) async {
           if (!isMounted()) return;
@@ -393,7 +412,7 @@ class _CallScreenState extends State<CallScreen> {
         },
       );
 
-      final requireSystemPermission = eventListener.eventEmitter.addListener(
+      final requireSystemPermission = eventListener.addListener(
         EventType.onRequireSystemPermission,
         (data) async {
           data = data as Map;
@@ -437,7 +456,7 @@ class _CallScreenState extends State<CallScreen> {
         },
       );
 
-      final networkStatusChangeListener = eventListener.eventEmitter.addListener(
+      final networkStatusChangeListener = eventListener.addListener(
         EventType.onUserVideoNetworkStatusChanged,
         (data) async {
           data = data as Map;
@@ -453,31 +472,30 @@ class _CallScreenState extends State<CallScreen> {
         },
       );
 
-      final eventErrorListener = eventListener.eventEmitter.addListener(
-        EventType.onError,
-        (data) async {
-          log("zoom error $data");
-          data = data as Map;
-          String errorType = data['errorType'];
-          showDialog<String>(
-            context: context,
-            builder: (BuildContext context) => AlertDialog(
-              title: const Text("Error"),
-              content: Text(errorType),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () => Navigator.pop(context, 'OK'),
-                  child: const Text('OK'),
-                ),
-              ],
-            ),
-          );
-          if (errorType == Errors.SessionJoinFailed ||
-              errorType == Errors.SessionDisconnecting) {}
-        },
-      );
+      final eventErrorListener = eventListener.addListener(EventType.onError, (
+        data,
+      ) async {
+        log("zoom error $data");
+        data = data as Map;
+        String errorType = data['errorType'];
+        showDialog<String>(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            title: const Text("Error"),
+            content: Text(errorType),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'OK'),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+        if (errorType == Errors.SessionJoinFailed ||
+            errorType == Errors.SessionDisconnecting) {}
+      });
 
-      final testMicStatusListener = eventListener.eventEmitter.addListener(
+      final testMicStatusListener = eventListener.addListener(
         EventType.onTestMicStatusChanged,
         (data) async {
           data = data as Map;
@@ -486,21 +504,25 @@ class _CallScreenState extends State<CallScreen> {
         },
       );
 
-      final micSpeakerVolumeChangedListener = eventListener.eventEmitter
-          .addListener(EventType.onMicSpeakerVolumeChanged, (data) async {
-            data = data as Map;
-            int type = data['micVolume'];
-            debugPrint(
-              'onMicSpeakerVolumeChanged: micVolume= $type, speakerVolume',
-            );
-          });
+      final micSpeakerVolumeChangedListener = eventListener.addListener(
+        EventType.onMicSpeakerVolumeChanged,
+        (data) async {
+          data = data as Map;
+          int type = data['micVolume'];
+          debugPrint(
+            'onMicSpeakerVolumeChanged: micVolume= $type, speakerVolume',
+          );
+        },
+      );
 
-      final cameraControlRequestResultListener = eventListener.eventEmitter
-          .addListener(EventType.onCameraControlRequestResult, (data) async {
-            data = data as Map;
-            bool approved = data['approved'];
-            debugPrint('onCameraControlRequestResult: approved= $approved');
-          });
+      final cameraControlRequestResultListener = eventListener.addListener(
+        EventType.onCameraControlRequestResult,
+        (data) async {
+          data = data as Map;
+          bool approved = data['approved'];
+          debugPrint('onCameraControlRequestResult: approved= $approved');
+        },
+      );
 
       return () => {
         sessionJoinListener.cancel(),
@@ -728,6 +750,11 @@ class _CallScreenState extends State<CallScreen> {
                   PIPView.of(context)?.stopFloating(); // Close PiP mode
                   return false; // Prevent back navigation
                 }
+                // if (isInSession.value &&
+                //     users.value.isNotEmpty &&
+                //     users.value.length > 1) {
+                //   showLeaveOptions();
+                // }
                 showLeaveOptions();
                 return false; // Prevent back navigation
               },

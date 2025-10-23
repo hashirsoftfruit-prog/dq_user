@@ -7,22 +7,22 @@ class NewsAndTips {
   NewsAndTips({this.status, this.message, this.news, this.tips});
 
   factory NewsAndTips.fromJson(Map<String, dynamic> json) => NewsAndTips(
-        status: json['status'] as bool?,
-        message: json['message'] as String?,
-        news: (json['news'] as List<dynamic>?)
-            ?.map((e) => News.fromJson(e as Map<String, dynamic>))
-            .toList(),
-        tips: (json['tips'] as List<dynamic>?)
-            ?.map((e) => Tip.fromJson(e as Map<String, dynamic>))
-            .toList(),
-      );
+    status: json['status'] as bool?,
+    message: json['message'] as String?,
+    news: (json['news'] as List<dynamic>?)
+        ?.map((e) => News.fromJson(e as Map<String, dynamic>))
+        .toList(),
+    tips: (json['tips'] as List<dynamic>?)
+        ?.map((e) => Tip.fromJson(e as Map<String, dynamic>))
+        .toList(),
+  );
 
   Map<String, dynamic> toJson() => {
-        'status': status,
-        'message': message,
-        'news': news?.map((e) => e.toJson()).toList(),
-        'tips': tips?.map((e) => e.toJson()).toList(),
-      };
+    'status': status,
+    'message': message,
+    'news': news?.map((e) => e.toJson()).toList(),
+    'tips': tips?.map((e) => e.toJson()).toList(),
+  };
 }
 
 class News {
@@ -35,6 +35,7 @@ class News {
   String? authorName;
   String? authorImage;
   String? authorTag;
+  String? source;
 
   News({
     this.id,
@@ -46,31 +47,34 @@ class News {
     this.authorName,
     this.authorImage,
     this.authorTag,
+    this.source,
   });
 
   factory News.fromJson(Map<String, dynamic> json) => News(
-        id: json['id'] as int?,
-        image: json['image'] as String?,
-        title: json['title'] as String?,
-        subtitle: json['subtitle'] as String?,
-        description: json['description'] as String?,
-        publishedDate: json['published_date'] as String?,
-        authorName: json['author_name'] as String?,
-        authorImage: json['author_image'] as String?,
-        authorTag: json['author_tag'] as String?,
-      );
+    id: json['id'] as int?,
+    image: json['image'] as String?,
+    title: json['title'] as String?,
+    subtitle: json['subtitle'] as String?,
+    description: json['description'] as String?,
+    publishedDate: json['published_date'] as String?,
+    authorName: json['author_name'] as String?,
+    authorImage: json['author_image'] as String?,
+    authorTag: json['author_tag'] as String?,
+    source: json['source'] as String?,
+  );
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'image': image,
-        'title': title,
-        'subtitle': subtitle,
-        'description': description,
-        'published_date': publishedDate,
-        'author_name': authorName,
-        'author_image': authorImage,
-        'author_tag': authorTag,
-      };
+    'id': id,
+    'image': image,
+    'title': title,
+    'subtitle': subtitle,
+    'description': description,
+    'published_date': publishedDate,
+    'author_name': authorName,
+    'author_image': authorImage,
+    'author_tag': authorTag,
+    'source': source,
+  };
 }
 
 class Tip {
@@ -83,6 +87,7 @@ class Tip {
   String? authorName;
   String? authorImage;
   String? authorTag;
+  String? source;
 
   Tip({
     this.id,
@@ -94,31 +99,34 @@ class Tip {
     this.authorName,
     this.authorImage,
     this.authorTag,
+    this.source,
   });
 
   factory Tip.fromJson(Map<String, dynamic> json) => Tip(
-        id: json['id'] as int?,
-        image: json['image'] as String,
-        title: json['title'] as String?,
-        subtitle: json['subtitle'] as String?,
-        description: json['description'] as String?,
-        publishedDate: json['published_date'] as String?,
-        authorName: json['author_name'] as String?,
-        authorImage: json['author_image'] as String?,
-        authorTag: json['author_tag'] as String?,
-      );
+    id: json['id'] as int?,
+    image: json['image'] as String,
+    title: json['title'] as String?,
+    subtitle: json['subtitle'] as String?,
+    description: json['description'] as String?,
+    publishedDate: json['published_date'] as String?,
+    authorName: json['author_name'] as String?,
+    authorImage: json['author_image'] as String?,
+    authorTag: json['author_tag'] as String?,
+    source: json['source'] as String?,
+  );
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'image': image,
-        'title': title,
-        'subtitle': subtitle,
-        'description': description,
-        'published_date': publishedDate,
-        'author_name': authorName,
-        'author_image': authorImage,
-        'author_tag': authorTag,
-      };
+    'id': id,
+    'image': image,
+    'title': title,
+    'subtitle': subtitle,
+    'description': description,
+    'published_date': publishedDate,
+    'author_name': authorName,
+    'author_image': authorImage,
+    'author_tag': authorTag,
+    'source': source,
+  };
 }
 
 class NewsAndTipsScreenArguments {

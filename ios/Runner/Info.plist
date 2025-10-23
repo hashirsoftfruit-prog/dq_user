@@ -77,15 +77,15 @@
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>bluetoothDecription</string>
 	<key>NSCameraUsageDescription</key>
-	<string>App needs camera permission to improve user experience</string>
+	<string>This app uses the camera to enable video consultations with patients during Zoom calls.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>This app requires access to your location to provide location-based features and improve user experience.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>We need location access to show your location</string>
+	<string>This app requires access to your location to provide location-based features and improve user experience.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>App needs microphone access</string>
+	<string>This app uses the microphone to let doctors and patients communicate with audio during Zoom video consultations.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>photoLibraryDescription</string>
+	<string>This app accesses the photo library so users can share medical images or reports with doctors during consultations.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>This app requires speech recognition to process user audio input for enhanced functionality.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

@@ -96,6 +96,7 @@ class _NewsAndTipsScreenState extends State<NewsAndTipsScreen> {
                     verticalSpace(16),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
+
                       children: [
                         CircleAvatar(
                           radius: 24,
@@ -136,21 +137,42 @@ class _NewsAndTipsScreenState extends State<NewsAndTipsScreen> {
                           ),
                         ),
                         horizontalSpace(16),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Author: ${item?.authorName ?? 'Unidentified Author'}",
-                              style: t500_14.copyWith(color: Colors.black),
-                            ),
-                            Text(
-                              "Date: ${item?.publishedDate ?? 'Unknown'}",
-                              style: t500_14.copyWith(color: Colors.black),
-                            ),
-                          ],
+                        Expanded(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              // 🔹 Left side (Author + Date)
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Author: ${item?.authorName ?? 'Unknown'}",
+                                    style: t500_14.copyWith(
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  Text(
+                                    "Date: ${item?.publishedDate ?? 'Unknown'}",
+                                    style: t500_14.copyWith(
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              // 🔹 Right side (Source)
+                              Text(
+                                "Source: ${item?.source ?? 'Unknown'}",
+                                style: t500_14.copyWith(color: Colors.black),
+                                textAlign: TextAlign.right,
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
+
                     verticalSpace(16),
                     Expanded(
                       child: SingleChildScrollView(
@@ -161,6 +183,7 @@ class _NewsAndTipsScreenState extends State<NewsAndTipsScreen> {
                         ),
                       ),
                     ),
+
                     verticalSpace(16),
                     Center(
                       child: Row(

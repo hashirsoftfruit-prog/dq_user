@@ -162,10 +162,14 @@ class _NewsAndTipsScreenState extends State<NewsAndTipsScreen> {
                               ),
 
                               // 🔹 Right side (Source)
-                              Text(
-                                "Source: ${item?.source ?? 'Unknown'}",
-                                style: t500_14.copyWith(color: Colors.black),
-                                textAlign: TextAlign.right,
+                              Expanded(
+                                child: Text(
+                                  "Source: ${item?.source ?? 'Unknown'}",
+                                  style: t500_14.copyWith(color: Colors.black),
+                                  textAlign: TextAlign.right,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.clip,
+                                ),
                               ),
                             ],
                           ),

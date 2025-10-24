@@ -1707,6 +1707,7 @@ class HomeManager extends ChangeNotifier {
       medicalRecsLoader = true;
       notifyListeners();
       dynamic responseData = await getIt<DioClient>().get(endpoint, token);
+      log("response data of news and tips $responseData");
       if (responseData != null) {
         newsAndTips = NewsAndTips.fromJson(responseData);
       } else {}

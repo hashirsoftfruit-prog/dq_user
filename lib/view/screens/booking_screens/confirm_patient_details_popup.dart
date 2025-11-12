@@ -31,6 +31,7 @@ import '../home_screen.dart';
 import 'booking_screen_widgets.dart';
 import 'questionare_screen.dart';
 
+//THE SECOND SECTION OF FINAL BOOKING SCREEN
 class ConfirmPatientDetails extends StatefulWidget {
   final double maxHeight;
   final double maxWidth;
@@ -142,8 +143,11 @@ class _ConfirmPatientDetailsState extends State<ConfirmPatientDetails> {
   //   }
   // }
 
+  //the below function is responsible to save the booking on the backend and redirect to respected screens
+  //if instant redirect to call waiting screen else> redirect to homescreen
   Future<void> _saveAndNavigate(
     int tempBookingId,
+    //get the savebooking function as parameter
     Future<BookingSaveResponseModel> Function(int tempBookingId) saveBooking,
     bool isFree,
     String orderId,
@@ -197,6 +201,8 @@ class _ConfirmPatientDetailsState extends State<ConfirmPatientDetails> {
         );
         return;
       }
+
+      //booking succes screen redirect back to the source screen and redirect to other screen like QuestionnaireScreen  or HomeScreen
       final bres = await navState.push<dynamic>(
         MaterialPageRoute(
           builder: (_) => BookingSuccessScreen(
@@ -245,6 +251,8 @@ class _ConfirmPatientDetailsState extends State<ConfirmPatientDetails> {
     }
   }
 
+  //this function handle the payment process
+  //getting validate booking and savebooking functions as parameter and passing to other functions as per requirement
   Future<void> _handleBookingFlow<T>({
     required Future<BookingValidationResponseData> Function() validateBooking,
     required Future<BookingSaveResponseModel> Function(int tempBookingId)
@@ -253,9 +261,12 @@ class _ConfirmPatientDetailsState extends State<ConfirmPatientDetails> {
     // required
   }) async {
     final saveBookingCalled = getIt<BookingManager>().saveBookingCalled;
+    //change the state to payment initiated (logo loader showing)
     getIt<BookingManager>().setPaymentInitiated(true);
+    //validate booking
     final validationResult = await validateBooking();
 
+    //if validation failed
     if (validationResult.status != true && validationResult.message != "") {
       final navigatorKey = getIt<NavigationService>().navigatorkey;
       final navState = navigatorKey.currentState; // may be null
@@ -282,6 +293,7 @@ class _ConfirmPatientDetailsState extends State<ConfirmPatientDetails> {
       return;
     }
 
+    //if the consultation is not free and the sdkpayload is not present on the response of validation
     if (!isFree && validationResult.sdkPayload == null) {
       showTopSnackBar(
         Overlay.of(context),
@@ -290,7 +302,9 @@ class _ConfirmPatientDetailsState extends State<ConfirmPatientDetails> {
       return;
     }
 
+    //check savebooking is already called, if not proceed to savebooking,
     if (!saveBookingCalled) {
+      //check the payload
       if (validationResult.sdkPayload != null) {
         await _saveAndNavigate(
           validationResult.temperoryBookingId!,
@@ -319,6 +333,9 @@ class _ConfirmPatientDetailsState extends State<ConfirmPatientDetails> {
     double w10p = widget.maxWidth * 0.1;
     double w1p = widget.maxWidth * 0.01;
 
+    //we have three type of bookings, instant(user can't select the doctor, but the range and speciality), schedule, and psychology instant(user can select the doctor)
+
+    //we call this screen from all above so we have to get the data by check the parametrs
     int specialityId = widget.isScheduledBooking
         ? widget.dataForScheduledBooking!.specialityId!
         : widget.dataForInstantBooking != null
@@ -329,13 +346,16 @@ class _ConfirmPatientDetailsState extends State<ConfirmPatientDetails> {
         : widget.dataForInstantBooking != null
         ? widget.dataForInstantBooking!.subSpecialityId
         : widget.dataForPsychologyInstantBooking!.subSpecialityId!;
+
+    //1-scheduledOnline,2-Scheduled Offline,null-instantCall
     int? bookingType = widget.isScheduledBooking
         ? widget.dataForScheduledBooking!.bookingType
-        : null; //1-scheduledOnline,2-Scheduled Offline,null-instantCall
+        : null;
+
+    //1-online,2-offline
     int bookingTypeForApplyCoupon =
-        widget.dataForScheduledBooking?.bookingType == 2
-        ? 2
-        : 1; //1-online,2-offline
+        widget.dataForScheduledBooking?.bookingType == 2 ? 2 : 1;
+
     SelectedPackageDetails? pkgChoosen = widget.isScheduledBooking
         ? widget.dataForScheduledBooking!.packageDetails
         : widget.dataForInstantBooking != null
@@ -343,6 +363,7 @@ class _ConfirmPatientDetailsState extends State<ConfirmPatientDetails> {
         : widget
               .dataForPsychologyInstantBooking!
               .packageDetails; //1-scheduledOnline,2-Scheduled Offline,null-instantCall
+
     int? doctorId = widget.isScheduledBooking
         ? widget.dataForScheduledBooking!.doctorId
         : widget
@@ -356,11 +377,14 @@ class _ConfirmPatientDetailsState extends State<ConfirmPatientDetails> {
     int? consultationCategoryForInstatntCall = widget.isScheduledBooking
         ? null
         : widget.dataForInstantBooking?.selectedPriceCategory;
-    dynamic docsData = widget.dataForPsychologyInstantBooking == null
+
+    dynamic bookingDetails = widget.dataForPsychologyInstantBooking == null
         ? getIt<BookingManager>().docsData as BookingDataDetailsModel
         : getIt<PsychologyManager>().psychologyInstantDoctorsModel;
 
     var locale = AppLocalizations.of(context);
+
+    //some widgets and funcitons are written below
 
     Widget btn({required Widget child}) {
       return AnimatedContainer(
@@ -499,6 +523,7 @@ class _ConfirmPatientDetailsState extends State<ConfirmPatientDetails> {
       // },
       child: Consumer<BookingManager>(
         builder: (context, mgr, child) {
+          //if the payment sdk status is charged and and payment isn't on process
           if (!mgr.isPaymentOnProcess && mgr.paymentMessage == "charged") {
             WidgetsBinding.instance.addPostFrameCallback((_) async {
               if (mgr.currentTempBookingId != null &&
@@ -515,7 +540,7 @@ class _ConfirmPatientDetailsState extends State<ConfirmPatientDetails> {
               }
             });
           } else if (!mgr.isPaymentOnProcess && mgr.paymentMessage != "") {
-            log("message is hereeeee");
+            //some error happened
             WidgetsBinding.instance.addPostFrameCallback((_) {
               showTopSnackBar(
                 Overlay.of(context),
@@ -782,7 +807,7 @@ class _ConfirmPatientDetailsState extends State<ConfirmPatientDetails> {
 
           Future<void> confirmBooking() async {
             final isFree =
-                docsData?.packageAvailability == true ||
+                bookingDetails?.packageAvailability == true ||
                 mgr.billModel?.amountAfterDiscount == "0" ||
                 mgr.billModel?.amountAfterDiscount == "0.0";
 
@@ -795,7 +820,7 @@ class _ConfirmPatientDetailsState extends State<ConfirmPatientDetails> {
             }
 
             getIt<BookingManager>().setProceedLoader(true);
-
+            //uplaoding files
             if (mgr.medicReportFilesPaths.isNotEmpty) {
               final result = await getIt<BookingManager>().addNewPatient(
                 isUserIsPatient:
@@ -824,7 +849,7 @@ class _ConfirmPatientDetailsState extends State<ConfirmPatientDetails> {
                 return;
               }
             }
-
+            //schedule booking
             if (widget.isScheduledBooking) {
               await _handleBookingFlow(
                 validateBooking: () =>
@@ -842,6 +867,7 @@ class _ConfirmPatientDetailsState extends State<ConfirmPatientDetails> {
                 isFree: isFree,
               );
             } else if (widget.dataForInstantBooking != null) {
+              //normal instant booking
               await _handleBookingFlow(
                 validateBooking: () =>
                     getIt<BookingManager>().instantBookingValidation(
@@ -858,6 +884,7 @@ class _ConfirmPatientDetailsState extends State<ConfirmPatientDetails> {
                 isFree: isFree,
               );
             } else if (widget.dataForPsychologyInstantBooking != null) {
+              //Psychology instant booking (with doctor)
               await _handleBookingFlow(
                 validateBooking: () =>
                     getIt<BookingManager>().psychologyInstantBookingValidation(
@@ -1644,10 +1671,10 @@ class _ConfirmPatientDetailsState extends State<ConfirmPatientDetails> {
                     ),
                   ),
                   verticalSpace(8),
-                  docsData?.packageAvailability != true &&
+                  bookingDetails?.packageAvailability != true &&
                           mgr.selectedPkg == null &&
-                          (docsData?.isFreeDoctorAvailable == false ||
-                              docsData?.seniorCitizen == false)
+                          (bookingDetails?.isFreeDoctorAvailable == false ||
+                              bookingDetails?.seniorCitizen == false)
                       ? Column(
                           children: [
                             const Divider(color: Colours.lightBlu),
@@ -1725,7 +1752,7 @@ class _ConfirmPatientDetailsState extends State<ConfirmPatientDetails> {
                           h1p: h1p,
                           w1p: w1p,
                         )
-                      : (docsData?.packageAvailability == true)
+                      : (bookingDetails?.packageAvailability == true)
                       ? Container(
                           padding: const EdgeInsets.all(8.0),
                           alignment: Alignment.center,
@@ -1780,7 +1807,7 @@ class _ConfirmPatientDetailsState extends State<ConfirmPatientDetails> {
                               ),
                             ),
                           )
-                        : docsData?.packageAvailability == true ||
+                        : bookingDetails?.packageAvailability == true ||
                               mgr.billModel?.amountAfterDiscount == "0" ||
                               mgr.billModel?.amountAfterDiscount == "0.0"
                         ? ButtonWidget(
@@ -1791,7 +1818,7 @@ class _ConfirmPatientDetailsState extends State<ConfirmPatientDetails> {
                         ? const SizedBox()
                         : PayButton(
                             btnText: AppLocalizations.of(context)!.proceed,
-                            amount: docsData?.packageAvailability == true
+                            amount: bookingDetails?.packageAvailability == true
                                 ? "0"
                                 : mgr.billModel?.amountAfterDiscount ?? "0",
                             ontap: confirmBooking,

@@ -70,7 +70,7 @@ class ErrorWidgetClass extends StatelessWidget {
 
 // Main application widget
 class MyApp extends StatefulWidget {
-  MyApp({super.key});
+  const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();

@@ -127,7 +127,7 @@ class BookingManager extends ChangeNotifier {
   }
 
   bool isFree = false;
-
+  //keeping order id on state management for future use
   String currentOrderId = "";
 
   // void initiatePayment(
@@ -175,6 +175,8 @@ class BookingManager extends ChangeNotifier {
     }
   }
 
+
+  //called from ppayment handler
   void changePaymentProcessAndMessage(bool status, String message) {
     log("message is status top change $status $message");
     isPaymentOnProcess = status;
@@ -183,6 +185,8 @@ class BookingManager extends ChangeNotifier {
     log("message is status bottom change $isPaymentOnProcess $paymentMessage");
   }
 
+
+  //reset all payment related stuffs to start new
   void resetPaymentState() {
     log("message is reset payment called");
     saveBookingCalled = false;
@@ -1602,7 +1606,7 @@ class BookingManager extends ChangeNotifier {
     await Future.delayed(const Duration(milliseconds: 50));
     setProfileLoader(true);
 
-    String endpoint = Endpoints.cancelBooking;
+    String endpoint = Endpoints.cancelScheduledBooking;
 
     String tokn =
         getIt<SharedPreferences>().getString(StringConstants.token) ?? "";
@@ -1620,6 +1624,29 @@ class BookingManager extends ChangeNotifier {
   disposeBillScreen() {
     selectedCoupon = null;
     billModel = null;
+  }
+  //if the user cancelled the consulation after initiating a call or from waiting questionnaire screen (if doctor not accepted)
+  Future<BasicResponseModel> cancelInitiatedBooking({
+    required int bookingId,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 50));
+    setProfileLoader(true);
+
+    String endpoint = Endpoints.cancelInitiatedBooking;
+
+    String tokn =
+        getIt<SharedPreferences>().getString(StringConstants.token) ?? "";
+    Map<String, dynamic> data = {"booking_id": bookingId};
+    dynamic responseData = await getIt<DioClient>().post(endpoint, data, tokn);
+
+    log("response of cancelInitiatedBooking $bookingId $responseData");
+    setProfileLoader(false);
+    notifyListeners();
+    if (responseData != null) {
+      return BasicResponseModel.fromJson(responseData);
+    } else {
+      return BasicResponseModel(message: "Something went wrong", status: false);
+    }
   }
 
   // Future<String> initiatePayment(dynamic sdkPayoad) async {

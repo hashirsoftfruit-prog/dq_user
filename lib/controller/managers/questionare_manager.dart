@@ -25,8 +25,6 @@ class QuestionnaireManager extends ChangeNotifier {
     String tokn =
         getIt<SharedPreferences>().getString(StringConstants.token) ?? "";
 
-    //TODO: change this into post for getting dynamic questions on the basis of speciality or subspeciality
-
     final data = {"appointment_id": appointmentID};
     dynamic responseData = await getIt<DioClient>().post(endpoint, data, tokn);
     log("response of getQuestionnare $responseData");

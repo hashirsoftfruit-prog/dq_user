@@ -198,8 +198,9 @@ class AuthManager extends ChangeNotifier {
       } else {
         return BasicResponseModel(status: false, message: "Server error");
       }
-    } catch (e) {
-      // print(e);
+    } catch (e, s) {
+      log("error on saving fcm $e , $s");
+      ;
     }
     return null;
   }
@@ -207,11 +208,15 @@ class AuthManager extends ChangeNotifier {
   Future<String?> getfcmToken() async {
     FirebaseMessaging messaging;
 
-    Future<String?> token;
+    String? token;
 
     messaging = FirebaseMessaging.instance;
-    await messaging.getAPNSToken();
-    token = messaging.getToken();
+    if (Platform.isIOS) {
+      await messaging.getAPNSToken();
+    }
+    token = await messaging.getToken();
+
+    log(token!);
 
     // final prefs = await SharedPreferences.getInstance();
     // prefs.setString("fcm_id", value);

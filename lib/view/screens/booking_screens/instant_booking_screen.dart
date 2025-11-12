@@ -28,6 +28,9 @@ import '../../widgets/common_widgets.dart';
 import 'booking_screen_widgets.dart';
 import 'confirm_patient_details_popup.dart';
 
+//BOOKING SCREENS ARE CODED AS 2 SECTIONS ONE FOR SHOWING THE PATIENT DETAILS,DOCTORS AND PACKAGES. ON THE SECOND SECTION THE BILL DETAILS AND PAYMENT SETUP ARE DONE
+//THE SECOND SECTION IS SAME FOR ALL KIND OF BOOKING WHICH IS CODED ON FILE ConfirmPatientDetails() (confirm_patient_details_popup.dart)
+
 class BookingScreen extends StatefulWidget {
   final int specialityId;
   final int? subCatId;

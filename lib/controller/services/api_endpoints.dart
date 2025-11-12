@@ -118,7 +118,8 @@ class Endpoints {
   static const String petBoardersList = "pets/pet-boarders-list";
   static const String petBoardersDetails = "pets/pet-boarding-details";
   static const String publicForumSearch = "public-forum/public-forum-search";
-  static const String cancelBooking = "user-cancel-booking";
+  static const String cancelScheduledBooking = "user-cancel-scheduled-booking";
+  static const String cancelInitiatedBooking = "user-cancel-initiated-booking";
   static const String updateLanguage = "update-language";
   static const String petCreate = "pets/user-pet-create";
   static const String userPets = "pets/users-pets";

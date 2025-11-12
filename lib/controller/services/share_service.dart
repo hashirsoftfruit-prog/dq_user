@@ -18,9 +18,8 @@ class ShareService {
       await file.writeAsBytes(bytes);
 
       // Step 3: Share text and image
-      await Share.shareXFiles(
-        [XFile(file.path)],
-        text: text,
+      await SharePlus.instance.share(
+        ShareParams(files: [XFile(file.path)], text: text),
       );
     } catch (e) {
       debugPrint('Error sharing text & image: $e');

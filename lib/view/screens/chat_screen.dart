@@ -576,6 +576,7 @@ class _ChatPageState extends State<ChatPage> {
                     ),
 
                     flexibleSpace: Container(
+                      padding: const EdgeInsets.only(top: 10),
                       color: Colors.white,
                       child: Row(
                         children: [

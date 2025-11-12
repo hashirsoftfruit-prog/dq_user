@@ -768,14 +768,12 @@ class CalenderWidget extends StatefulWidget {
   final DateTime minDate;
 
   const CalenderWidget(this.minDate, {super.key});
+
   @override
   State<CalenderWidget> createState() => _CalenderWidgetState();
 }
 
 class _CalenderWidgetState extends State<CalenderWidget> {
-  // DateTime? pickedDateRange;
-
-  // List<Param> doses;
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -784,32 +782,23 @@ class _CalenderWidgetState extends State<CalenderWidget> {
         "Select Date",
         style: t700_18.copyWith(color: clrFFFFFF, height: 1),
       ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SfDateRangePicker(
-            backgroundColor: Colors.white,
-            // controller: _controller,
-            view: DateRangePickerView.month,
-            minDate: DateTime.now(),
-            maxDate: DateTime.now().add(const Duration(days: 23)),
-            // minDate: widget.minDate.add(Duration(days: 1)),
-            selectionMode: DateRangePickerSelectionMode.single,
-            toggleDaySelection: true,
-            cancelText: "Cancel",
-
-            onSelectionChanged: (dd) {
-              Navigator.pop(context, dd.value);
-            },
-            monthViewSettings: const DateRangePickerMonthViewSettings(
-              enableSwipeSelection: false,
-            ),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: SfDateRangePicker(
+          backgroundColor: Colors.white,
+          view: DateRangePickerView.month,
+          minDate: widget.minDate,
+          maxDate: DateTime.now().add(const Duration(days: 23)),
+          selectionMode: DateRangePickerSelectionMode.single,
+          toggleDaySelection: true,
+          onSelectionChanged: (dd) {
+            Navigator.pop(context, dd.value);
+          },
+          monthViewSettings: const DateRangePickerMonthViewSettings(
+            enableSwipeSelection: false,
           ),
-        ],
+        ),
       ),
-      titlePadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 8),
-      actionsPadding: const EdgeInsets.only(bottom: 18, right: 10),
-      contentPadding: const EdgeInsets.only(bottom: 10, right: 8, left: 8),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(11)),
       ),

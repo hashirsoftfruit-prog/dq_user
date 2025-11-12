@@ -41,7 +41,7 @@ import '../../model/core/specialities_response_model.dart';
 import '../../model/core/symptoms_and_issues_list_model.dart';
 import '../../model/core/upcome_appoiments_response_model.dart';
 import '../../model/helper/service_locator.dart';
-import '../../speech.dart';
+import '../../controller/services/speech.dart';
 import '../theme/constants.dart';
 import '../widgets/animate_arrow.dart';
 import '../widgets/coming_soon_dialog.dart';
@@ -95,6 +95,7 @@ class _HomeScreenState extends State<HomeScreen>
   bool isExpanded = false;
   AnimationController? _controller;
 
+  //managing the header sections's gradient on the basis of scrolling
   bool showGradient = true;
 
   bool get _isShrink {
@@ -112,10 +113,13 @@ class _HomeScreenState extends State<HomeScreen>
         lastStatus = _isShrink;
       });
     }
+
     setState(() {
+      //managing the gradient on the basis of pixel
       showGradient = scCntrol.position.pixels <= 270;
     });
 
+    //handling search bar position
     if (scCntrol.position.pixels > 10) {
       setState(() => searchFixed = true);
     } else {
@@ -132,6 +136,7 @@ class _HomeScreenState extends State<HomeScreen>
     }
   }
 
+  //speech to text button click
   Future<void> _toggleButton() async {
     if (isExpanded) {
       // Button was expanded, now trigger function
@@ -225,6 +230,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   DateTime? currentBackPressTime;
 
+  // managing the backpress
   Future<bool> onWillPop() {
     DateTime now = DateTime.now();
     if (currentBackPressTime == null ||
@@ -250,17 +256,20 @@ class _HomeScreenState extends State<HomeScreen>
   void initState() {
     super.initState();
     // initDeepLinkListener();
+
     _setupFirebaseMessaging();
     scCntrol.addListener(_scrollListener);
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
+    //home functions
     getIt<HomeManager>().homeBeginFns();
     getIt<BookingManager>().disposeBooking();
     WidgetsBinding.instance.addObserver(this);
   }
 
+  //formating the appointment date and time
   DateTime? getValidStartTime(UpcomingAppointments? todaysAppointment) {
     DateTime? startTime = todaysAppointment != null
         ? DateTime.tryParse(todaysAppointment.bookingStartTime ?? "")
@@ -286,9 +295,11 @@ class _HomeScreenState extends State<HomeScreen>
 
     // Handle notification clicks
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      //redirecting to appointment screen
       if (message.data['type'] == 'booking_alert_on_time') {
         Navigator.pushNamed(context, RouteNames.appoinments);
       }
+      //add the remaining if required
     });
   }
 
@@ -306,12 +317,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   final GlobalKey<ScaffoldState> _key =
       GlobalKey<ScaffoldState>(); // Create a key
-  // late final AnimationController _pageAnimation;
 
-  // final GlobalKey container1Key = GlobalKey();
-  // // final GlobalKey container2Key = GlobalKey();
-  // // final GlobalKey container3Key = GlobalKey();
-  // final GlobalKey container4Key = GlobalKey();
   final TextEditingController forumTitleController = TextEditingController();
 
   @override
@@ -321,6 +327,7 @@ class _HomeScreenState extends State<HomeScreen>
     String username =
         getIt<SharedPreferences>().getString(StringConstants.userName) ?? "";
 
+    //nav item widget
     Widget btNavIcon({
       required String icon,
       required Function onTap,
@@ -361,6 +368,7 @@ class _HomeScreenState extends State<HomeScreen>
     // double hMgr.heightF =   Provider.of<StateManager> (context).heightF;
     // DateTime? _lastClicked;
 
+    //search bar placeholde text
     List<TyperAnimatedText> lst =
         [
               (AppLocalizations.of(context)!.symptoms),
@@ -377,8 +385,10 @@ class _HomeScreenState extends State<HomeScreen>
             )
             .toList();
 
+    //using layout builder for responsivness
     return LayoutBuilder(
       builder: (context, constraints) {
+        //below items are using for widgets
         double maxHeight = constraints.maxHeight;
         double maxWidth = constraints.maxWidth;
         double h1p = maxHeight * 0.01;
@@ -398,6 +408,7 @@ class _HomeScreenState extends State<HomeScreen>
         //   );
         // }
 
+        //common function to redirect on the basis of parameters
         fn({
           required int specialityId,
           required int? categoryId,
@@ -448,6 +459,7 @@ class _HomeScreenState extends State<HomeScreen>
 
         return Consumer<HomeManager>(
           builder: (context, hMgr, child) {
+            //mic button for FloatingAactionButton
             final micButton = AnimatedPositioned(
               duration: const Duration(milliseconds: 300),
               left: atTop || isExpanded ? 12 : -12,
@@ -681,7 +693,9 @@ class _HomeScreenState extends State<HomeScreen>
                 backgroundColor: Colors.white,
                 floatingActionButton: Stack(
                   children: [
+                    //left side
                     micButton,
+                    //right side
                     Container(
                       margin: const EdgeInsets.only(bottom: 60),
                       child: const CustomFabMenu(),
@@ -697,6 +711,7 @@ class _HomeScreenState extends State<HomeScreen>
                 //   },
                 //   icon: const Icon(Icons.speaker),
                 // ),
+                //aligning the FAB as center docked
                 floatingActionButtonLocation:
                     FloatingActionButtonLocation.centerDocked,
                 // floatingActionButton:
@@ -882,6 +897,8 @@ class _HomeScreenState extends State<HomeScreen>
                             //         child: pad(vertical: h1p * 3, child: Center(child: LoadingAnimationWidget.twoRotatingArc(color: clr2D2D2D, size: 30))),
                             //       )
                             //     :
+
+                            //using entry widget for better entry with animation
                             Entry(
                               yOffset: -20,
                               duration: const Duration(milliseconds: 700),
@@ -1228,7 +1245,6 @@ class _HomeScreenState extends State<HomeScreen>
                                   }
 
                                   // NOT FEELING WELL SECTION
-
                                   return Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
@@ -1390,6 +1406,8 @@ class _HomeScreenState extends State<HomeScreen>
                                               ],
                                             )
                                           : const SizedBox(),
+
+                                      //ayurverdi and homeo section
                                       ayurvedic != null && homioPathic != null
                                           ? Padding(
                                               padding:
@@ -1520,6 +1538,8 @@ class _HomeScreenState extends State<HomeScreen>
                                           : const SizedBox(),
                                       verticalSpace(8),
                                       verticalSpace(h1p),
+
+                                      //MEDICINE REMINDER
                                       hW.reminderBox(
                                         w1p: w1p,
                                         title: AppLocalizations.of(
@@ -1538,6 +1558,7 @@ class _HomeScreenState extends State<HomeScreen>
                                           );
                                         },
                                       ),
+
                                       if (subBanners.isNotEmpty) ...[
                                         verticalSpace(h1p),
                                         CarouselSlider(
@@ -1580,6 +1601,8 @@ class _HomeScreenState extends State<HomeScreen>
                                 },
                               ),
                             ),
+
+                            //FOLLOW UP SECTION
                             if (hMgr.bookingsFollowUps.isNotEmpty) ...[
                               verticalSpace(8),
                               pad(
@@ -1676,6 +1699,7 @@ class _HomeScreenState extends State<HomeScreen>
                               ),
                             ],
 
+                            //MEDICAL FORUM SECTION
                             Container(
                               // height: 250,
                               margin: const EdgeInsets.symmetric(vertical: 10),
@@ -1986,7 +2010,7 @@ class _HomeScreenState extends State<HomeScreen>
                                 ),
                               ),
 
-                            //news
+                            //NEWS SECTION
                             if (hMgr.newsAndTips != null &&
                                 hMgr.newsAndTips!.news!.isNotEmpty)
                               Container(
@@ -2212,6 +2236,8 @@ class _HomeScreenState extends State<HomeScreen>
                           ],
                         ),
 
+                        //SEARCH AREA
+
                         // search background
                         if (searchFixed)
                           AnimatedContainer(
@@ -2350,7 +2376,7 @@ class _HomeScreenState extends State<HomeScreen>
                           ),
                         ),
 
-                        // search bar
+                        // SEARCH BAR
                         Entry(
                           yOffset: -20,
                           // scale: 20,
@@ -2752,55 +2778,6 @@ class _HomeScreenState extends State<HomeScreen>
       },
     );
   }
-
-  List<Map<String, dynamic>> sampleItems = [
-    {
-      "image":
-          "https://static.toiimg.com/thumb/msid-104985288,width-1280,resizemode-4/104985288.jpg",
-      "title": "New Study Finds Morning Doses Work Better",
-      "description":
-          "Recent medical research shows that medicines taken in the morning may be more effective..Recent medical research shows that medicines taken in the morning may be more effective.Recent medical research shows that medicines taken in the morning may be more effectiveRecent medical research shows that medicines taken in the morning may be more effective",
-    },
-    {
-      "image":
-          "https://static.toiimg.com/thumb/msid-104985288,width-1280,resizemode-4/104985288.jpg",
-      "title": "WHO Releases Updated Vaccine Guidelines",
-      "description":
-          "WHO recommends updated vaccination schedule to fight new strainsWHO recommends updated vaccination schedule to fight new strainsWHO recommends updated vaccination schedule to fight new strainsWHO recommends updated vaccination schedule to fight new strains...",
-    },
-
-    {
-      "image":
-          "https://static.toiimg.com/thumb/msid-104985288,width-1280,resizemode-4/104985288.jpg",
-      "title": "New Study Finds Morning Doses Work Better",
-      "description":
-          "Recent medical research shows that medicines taken in the morning may be more effective..Recent medical research shows that medicines taken in the morning may be more effective.Recent medical research shows that medicines taken in the morning may be more effectiveRecent medical research shows that medicines taken in the morning may be more effective",
-    },
-    {
-      "image":
-          "https://static.toiimg.com/thumb/msid-104985288,width-1280,resizemode-4/104985288.jpg",
-      "title": "WHO Releases Updated Vaccine Guidelines",
-      "description":
-          "WHO recommends updated vaccination schedule to fight new strainsWHO recommends updated vaccination schedule to fight new strainsWHO recommends updated vaccination schedule to fight new strainsWHO recommends updated vaccination schedule to fight new strains...",
-    },
-
-    {
-      "image":
-          "https://static.toiimg.com/thumb/msid-104985288,width-1280,resizemode-4/104985288.jpg",
-      "title": "New Study Finds Morning Doses Work Better",
-      "description":
-          "Recent medical research shows that medicines taken in the morning may be more effective..Recent medical research shows that medicines taken in the morning may be more effective.Recent medical research shows that medicines taken in the morning may be more effectiveRecent medical research shows that medicines taken in the morning may be more effective",
-    },
-    {
-      "image":
-          "https://static.toiimg.com/thumb/msid-104985288,width-1280,resizemode-4/104985288.jpg",
-      "title": "WHO Releases Updated Vaccine Guidelines",
-      "description":
-          "WHO recommends updated vaccination schedule to fight new strainsWHO recommends updated vaccination schedule to fight new strainsWHO recommends updated vaccination schedule to fight new strainsWHO recommends updated vaccination schedule to fight new strains...",
-    },
-
-    // Add more items
-  ];
 }
 // class LeftCornerClipper extends CustomClipper<Path> {
 //   @override
@@ -2880,6 +2857,7 @@ class TodaysAppoinmentBoxwithTimer extends StatelessWidget {
   }
 }
 
+//LOADING WIDGET WITH LOGO
 class LogoLoader extends StatefulWidget {
   final double? size;
   final Color? color;
@@ -2940,6 +2918,7 @@ class _LogoLoaderState extends State<LogoLoader>
   }
 }
 
+//LOADING WIDGET WITHOUT LOGO
 class AppLoader extends StatelessWidget {
   final double? size;
   final Color? color;

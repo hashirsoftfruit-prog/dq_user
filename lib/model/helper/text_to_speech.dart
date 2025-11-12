@@ -9,6 +9,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TextToSpeech {
+  //using singleton for better experience
   TextToSpeech._();
   static final TextToSpeech instance = TextToSpeech._();
 
@@ -27,20 +28,24 @@ class TextToSpeech {
     await flutterTts.setLanguage("en-IN"); // Example language
   }
 
+  //language code will get from notification payload
   void playSound(data, langCode) async {
     try {
       List<dynamic> medicines = jsonDecode(data);
 
-      // Set language only, avoid setVoice due to potential binding issues
+      //if language code is not present on notificaiton we can get it from local storage
       langCode ??= getIt<SharedPreferences>().getString(
         StringConstants.language,
       );
+      // Set language only, avoid setVoice due to potential binding issues
       await flutterTts.setLanguage("$langCode-IN");
 
+      //text for speaking
       String toSpeak = langCode == "ml"
           ? "നിങ്ങൾക്ക് "
           : "It's time for you to take ";
 
+      //medicines are stored in list, so using loop for adding to text
       for (var item in medicines) {
         double dose = double.parse(item['count'].toString());
         String name = item['name'].toString();
@@ -55,6 +60,7 @@ class TextToSpeech {
         }
       }
 
+      //last part of text
       toSpeak += medicines.length > 1
           ? (langCode == "ml" ? "എന്നിവ കഴിക്കാനുള്ള സമയമായി." : "")
           : (langCode == "ml" ? "കഴിക്കാനുള്ള സമയമായി." : "");
@@ -72,6 +78,7 @@ class TextToSpeech {
     }
   }
 
+  //medicine dose map for malayalam
   Map<double, String> medicineMapMl = {
     0.25: "കാൽ", // quarter
     0.5: "അര", // half
@@ -97,6 +104,7 @@ class TextToSpeech {
     10.0: "പത്ത്",
   };
 
+  //medicine dose map for english
   Map<double, String> medicineMapEn = {
     0.25: "Quarter",
     0.5: "Half",

@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously, deprecated_member_use
 
+import 'package:dqapp/controller/managers/booking_manager.dart';
 import 'package:dqapp/controller/managers/questionare_manager.dart';
 import 'package:dqapp/model/core/questionare_response_model.dart';
 import 'package:dqapp/view/theme/constants.dart';
@@ -55,6 +56,10 @@ class _NotificationScreenState extends State<QuestionnaireScreen> {
     );
 
     if (result != null) {
+      //call request revoke api
+
+      getIt<BookingManager>().cancelInitiatedBooking(bookingId: widget.bookingId);
+
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (_) => const HomeScreen()),

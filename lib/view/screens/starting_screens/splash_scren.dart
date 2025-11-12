@@ -41,7 +41,7 @@ class _SplashScreenState extends State<SplashScreen>
   void _navigateHome() async {
     await Future.delayed(const Duration(seconds: 3), () async {
       var tkn = getIt<SharedPreferences>().getString(StringConstants.token);
-
+      //checking user is logged in or not and redirecting
       if (tkn == null) {
         Navigator.of(
           context,

@@ -21,6 +21,8 @@ import '../../view/widgets/common_widgets.dart';
 import '../services/api_endpoints.dart';
 import '../services/dio_service.dart';
 
+//this sepcifically handles the psychology related areas
+
 class PsychologyManager extends ChangeNotifier {
   PsychologyData? psychologyData;
   DailyWellnessDataModel? dailyWellnessDataModel;

@@ -17,7 +17,7 @@ class PaymentService {
     hyperSDK.initiate(sdkPayLoad, hyperSDKCallbackHandler);
   }
 
-  //create orderr
+
   void hyperSDKCallbackHandler(MethodCall methodCall) {
     switch (methodCall.method) {
       case "hide_loader":

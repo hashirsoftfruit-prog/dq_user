@@ -9,6 +9,7 @@ import '../../model/core/basic_response_model.dart';
 import '../../model/helper/service_locator.dart';
 import '../../view/theme/constants.dart';
 
+//this manager used for common functions across the app
 class StateManager extends ChangeNotifier {
   int index = 0;
   int petBtNavIndex = 1;

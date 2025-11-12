@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:dqapp/model/helper/text_to_speech.dart';
 import 'package:dqapp/view/screens/anatomy_screen.dart';
 import 'package:dqapp/view/screens/booking_screens/booking_screen_widgets.dart';
+import 'package:dqapp/view/screens/home_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -19,6 +20,7 @@ import 'model/helper/service_locator.dart';
 final FlutterLocalNotificationsPlugin localNotifications =
     FlutterLocalNotificationsPlugin();
 
+//we are using multiple notification channel to show different type of notification and sound (sounds are stored on android/app/src/main/res/raw)
 /// ANDROID CHANNELS
 const AndroidNotificationChannel defaultChannel = AndroidNotificationChannel(
   'high_importance_channel',
@@ -61,7 +63,7 @@ const AndroidNotificationChannel scheduledIn10Channel =
       sound: RawResourceAndroidNotificationSound('today'),
     );
 
-// iOS equivalents
+// iOS Channels
 const DarwinNotificationDetails defaultDarwinDetails =
     DarwinNotificationDetails(
       categoryIdentifier: 'default_category',
@@ -139,6 +141,8 @@ class NotificationService {
       initSettings,
       onDidReceiveNotificationResponse: (payload) async {
         final msg = RemoteMessage.fromMap(jsonDecode(payload.payload!));
+
+        /// Performs the appropriate action depending on the notification type.
         handleAction(msg);
       },
       onDidReceiveBackgroundNotificationResponse:
@@ -149,7 +153,7 @@ class NotificationService {
         .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin
         >();
-
+    //we are using multiple notification channel to show different type of notification and sound (sounds are stored on android/app/src/main/res/raw)
     await android?.createNotificationChannel(defaultChannel);
     await android?.createNotificationChannel(medicineEn);
     await android?.createNotificationChannel(medicineMl);
@@ -180,7 +184,8 @@ class NotificationService {
       log("notification message ${m.data}");
 
       if (m.notification == null) return;
-
+      
+      //medicine alert
       if (m.data['type'] == "medicine_alert_in_en" ||
           m.data['type'] == "medicine_alert_in_ml") {
         TextToSpeech.instance.playSound(
@@ -198,6 +203,7 @@ class NotificationService {
     // iOS: wait for APNs token
     try {
       if (Platform.isIOS) {
+        //not work on simulator, use real device for testing
         String? apnsToken = await _messaging.getAPNSToken();
         if (apnsToken != null) {
           log('APNs token: $apnsToken');
@@ -222,8 +228,12 @@ class NotificationService {
     final n = message.notification;
     if (n == null) return;
 
+
+    //pick the channel on the basis of notification type
     final channel = userChannel ?? _pickChannel(message);
 
+
+    //show the notification on the basis of the channel
     try {
       await localNotifications.show(
         n.hashCode,
@@ -257,9 +267,21 @@ class NotificationService {
   }
 
   void handleAction(RemoteMessage event) {
+    //triggering actions on the basis of notification type
+    log("event data ${event.data}");
     switch (event.data['type']) {
       case 'booking_alert_in_10':
         getIt<HomeManager>().getUpcomingAppointments(isRefresh: true);
+        break;
+      case 'call_rejected_after_initiation':
+        //this case handles if the doctor cancel the call, and redierct to home screen
+        log("reached here");
+        Navigator.of(
+          getIt<NavigationService>().navigatorkey.currentContext!,
+        ).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (ctx) => const HomeScreen()),
+          (Route<dynamic> route) => false,
+        );
         break;
       case 'booking_alert_on_time':
       case 'accepting_patient_request':
@@ -269,6 +291,7 @@ class NotificationService {
       case 'active_call_alert':
         bool callStatus = getIt<StateManager>().getInCallStatus();
         bool chatStatus = getIt<StateManager>().getInChatStatus();
+        log("call status is $callStatus");
         if (!callStatus) {
           _showCallAlert(
             name: event.data['doctor_full_name'],
@@ -278,6 +301,7 @@ class NotificationService {
             imag: event.data['doctor_image'],
             qualif: event.data['doctor_professional_qualification'],
             inChatStatus: chatStatus,
+            tempBookingId: int.tryParse(event.data['temperory_booking_id']),
           );
         }
         break;
@@ -294,6 +318,8 @@ class NotificationService {
   }
 }
 
+
+//showing anatomy images on video call
 void _showAnatomyImage({
   String? bookingId,
   String? leftPoint,
@@ -309,6 +335,8 @@ void _showAnatomyImage({
   );
 }
 
+
+//call alert shows when a doctor call the patient
 void _showCallAlert({
   required String name,
   required String appoinmId,
@@ -317,6 +345,7 @@ void _showCallAlert({
   required int? bookId,
   required int? docId,
   required bool inChatStatus,
+  required int? tempBookingId,
 }) {
   showDialog(
     context: getIt<NavigationService>().navigatorkey.currentContext!,
@@ -328,6 +357,7 @@ void _showCallAlert({
       bookingId: bookId!,
       inChatStatus: inChatStatus,
       docId: docId!,
+      tempBookingId: tempBookingId!,
     ),
   );
 }

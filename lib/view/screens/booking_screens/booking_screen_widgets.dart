@@ -1938,6 +1938,7 @@ class CallRequestPopup extends StatefulWidget {
   final String qualification;
   final int bookingId;
   final int docId;
+  final int tempBookingId;
   final String appoinmentId;
   final bool inChatStatus;
 
@@ -1951,6 +1952,7 @@ class CallRequestPopup extends StatefulWidget {
     required this.appoinmentId,
     required this.bookingId,
     required this.inChatStatus,
+    required this.tempBookingId,
   });
 
   @override
@@ -2073,6 +2075,9 @@ class _CallRequestPopupState extends State<CallRequestPopup> {
                       child: InkWell(
                         onTap: () {
                           Navigator.pop(context);
+                          getIt<BookingManager>().cancelInitiatedBooking(
+                            bookingId: widget.tempBookingId,
+                          );
                         },
                         child: btn(isAcceptBtn: false),
                       ),

@@ -1,7 +1,5 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 
 import 'package:dio/dio.dart';
 import 'package:dqapp/controller/managers/auth_manager.dart';
@@ -14,7 +12,8 @@ import 'package:dqapp/model/core/purchase_package_response_model.dart';
 import 'package:dqapp/model/core/reminder_priscrition_list_model.dart';
 import 'package:dqapp/model/core/specialities_response_model.dart';
 import 'package:dqapp/view/theme/constants.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../model/core/banners_response_model.dart';
@@ -320,6 +319,7 @@ class HomeManager extends ChangeNotifier {
     notifyListeners();
   }
 
+  //reminder
   setTitle(String val) {
     addReminderModel.title = val;
   }
@@ -365,6 +365,7 @@ class HomeManager extends ChangeNotifier {
     notifyListeners();
   }
 
+  //dosage related
   changeTime({required int index, required String time}) {
     addReminderModel.timeAndDoses![index].time = time;
     addReminderModel.timeAndDoses![index].scrollValue = getIt<StateManager>()
@@ -1150,6 +1151,7 @@ class HomeManager extends ChangeNotifier {
     }
   }
 
+  //intial function of app, call all required APIs
   homeBeginFns() async {
     await getIt<LocationManager>().getPopularCities();
     await getSpecialities();
@@ -1379,6 +1381,7 @@ class HomeManager extends ChangeNotifier {
     notifyListeners();
   }
 
+  //only purchased
   getPurchasedPackages() async {
     await Future.delayed(const Duration(milliseconds: 100));
     appoinmentsLoader = true;
@@ -1403,6 +1406,7 @@ class HomeManager extends ChangeNotifier {
     notifyListeners();
   }
 
+  //all packages
   getPackages() async {
     await Future.delayed(const Duration(milliseconds: 100));
     appoinmentsLoader = true;
@@ -1426,6 +1430,7 @@ class HomeManager extends ChangeNotifier {
     notifyListeners();
   }
 
+  //this function will create order instance on backend and send back the sdkpayload for payment SDK
   Future<void> purchasePkgApi(Map<String, dynamic> dt) async {
     String endpoint = Endpoints.initiatePurchasePackage;
     isPaymentOnProcess = true;
@@ -1443,11 +1448,13 @@ class HomeManager extends ChangeNotifier {
       if (!result.status!) {
         setPaymentStatus(false, result.message!);
       } else if (result.sdkPayload != null) {
+        //got the sdkPayload, free to start payment
         //initiate payment
         tempPackageId = result.temperoryUserPackageId!;
         packageOrderId = result.orderId!;
         notifyListeners();
         try {
+          //we using payment on 2 sections(booking and package), now it is seperate functions for each of them, want to make it better one
           PaymentService.instance.hyperSDK.openPaymentPage(
             result.sdkPayload,
             hyperSDKCallbackHandler,
@@ -1464,6 +1471,7 @@ class HomeManager extends ChangeNotifier {
     }
   }
 
+  //this funciton called from setPaymentStatus after payment event handler(hyperSDKCallbackHandler) once the payment is succesfully completed (charged)
   Future<bool> confirmPurchasePkgApi() async {
     log("message is confirm package cllaed");
     String endpoint = Endpoints.confirmPurchasePackage;
@@ -1478,7 +1486,7 @@ class HomeManager extends ChangeNotifier {
       "package_order_id": packageOrderId,
     };
     dynamic responseData = await getIt<DioClient>().post(endpoint, data, tokn);
-    log("response data of confirm purchase packahe $responseData");
+    log("response data of confirm purchase package $responseData");
     if (responseData != null) {
       var result = BasicResponseModel.fromJson(responseData);
 
@@ -1506,7 +1514,7 @@ class HomeManager extends ChangeNotifier {
         notifyListeners();
       } else {
         isPaymentOnProcess = false;
-        paymentMessage = "";
+        // paymentMessage = ""; //we added the error message from confirmPurchasePkgApi()
         notifyListeners();
       }
     } else {

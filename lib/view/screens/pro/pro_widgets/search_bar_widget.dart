@@ -5,7 +5,7 @@ import 'package:dqapp/l10n/app_localizations.dart';
 import 'package:entry/entry.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import '../../../../speech.dart';
+import '../../../../controller/services/speech.dart';
 import '../../../theme/constants.dart';
 import '../../../theme/text_styles.dart';
 import '../../search_results_screen.dart';

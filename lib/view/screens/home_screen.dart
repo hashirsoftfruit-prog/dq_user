@@ -388,7 +388,7 @@ class _HomeScreenState extends State<HomeScreen>
     //using layout builder for responsivness
     return LayoutBuilder(
       builder: (context, constraints) {
-        //below items are using for widgets
+        //below items are using for widgets 
         double maxHeight = constraints.maxHeight;
         double maxWidth = constraints.maxWidth;
         double h1p = maxHeight * 0.01;

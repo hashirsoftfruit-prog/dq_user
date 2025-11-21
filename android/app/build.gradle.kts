@@ -22,7 +22,7 @@ if (keystorePropertiesFile.exists()) {
 android {
     namespace = "com.ozaz.dqapp"
     compileSdk = 36
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "29.0.13599879"
 
 
     packagingOptions {

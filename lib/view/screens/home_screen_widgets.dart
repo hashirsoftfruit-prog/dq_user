@@ -14,6 +14,7 @@ import 'package:dqapp/view/theme/text_styles.dart';
 import 'package:dqapp/view/widgets/coming_soon_dialog.dart';
 import 'package:entry/entry.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localization/script/upgrade_all_dependencies.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:redacted/redacted.dart';
 
@@ -2515,6 +2516,8 @@ class _CustomFabMenuState extends State<CustomFabMenu>
                 },
           ),
         );
+        _toggleMenu();
+        // Navigator.pop(mainContext);
       },
       child: Container(
         padding: const EdgeInsets.all(4),

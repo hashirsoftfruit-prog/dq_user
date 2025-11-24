@@ -36,6 +36,7 @@ class _ProHomeTabState extends State<ProHomeTab>
   void initState() {
     tabController = TabController(length: 6, vsync: this);
     tabController.addListener(tabListener);
+
     tabIndex = widget.indexFromHome;
     getIt<ProHomeVm>().proBeginFns();
     super.initState();
@@ -48,8 +49,15 @@ class _ProHomeTabState extends State<ProHomeTab>
   }
 
   tabListener() {
+    print("swipedddd");
     tabIndex = tabController.index;
     if (mounted) setState(() {});
+
+    // if (tabController.indexIsChanging) {
+    //   setState(() {
+    //     tabIndex = tabController.index;
+    //   });
+    // }
   }
 
   @override

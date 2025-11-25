@@ -2,6 +2,7 @@ import 'package:dqapp/view/theme/text_styles.dart';
 import 'package:dqapp/controller/managers/booking_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../model/core/banners_response_model.dart';
 import '../../../model/helper/service_locator.dart';
 import '../../theme/constants.dart';
@@ -92,6 +93,50 @@ class _BannerDetailsScreenScreenState extends State<BannerDetailsScreen> {
                               widget.banner.description ?? "",
                               style: t400_16.copyWith(color: clr2D2D2D),
                             ),
+                            verticalSpace(24),
+                            if (widget.banner.url != null)
+                              Center(
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.white,
+                                    foregroundColor: clr2D2D2D,
+                                    elevation: 6,
+                                    shadowColor: Colors.black12,
+                                    side: BorderSide(
+                                      color: Colors.grey.shade300,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 28,
+                                      vertical: 14,
+                                    ),
+                                  ),
+                                  onPressed: () async {
+                                    final uri = Uri.parse(widget.banner.url!);
+                                    if (!await canLaunchUrl(uri)) return;
+                                    await launchUrl(
+                                      uri,
+                                      mode: LaunchMode.externalApplication,
+                                    );
+                                  },
+                                  child: const Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.open_in_new, size: 18),
+                                      SizedBox(width: 8),
+                                      Text(
+                                        "Open Link",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             verticalSpace(24),
                           ],
                         ),

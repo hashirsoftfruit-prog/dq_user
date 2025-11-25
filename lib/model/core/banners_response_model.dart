@@ -21,14 +21,14 @@ class BannersList {
     }
   }
 
-//   Map<String, dynamic> toJson() {
-//     final Map<String, dynamic> data = new Map<String, dynamic>();
-//     data['status'] = this.status;
-//     if (this.mainBanners != null) {
-//       data['banner_list'] = this.mainBanners!.map((v) => v.toJson()).toList();
-//     }
-//     return data;
-//   }
+  //   Map<String, dynamic> toJson() {
+  //     final Map<String, dynamic> data = new Map<String, dynamic>();
+  //     data['status'] = this.status;
+  //     if (this.mainBanners != null) {
+  //       data['banner_list'] = this.mainBanners!.map((v) => v.toJson()).toList();
+  //     }
+  //     return data;
+  //   }
 }
 
 class BannerList {
@@ -42,18 +42,21 @@ class BannerList {
   String? redirectionType;
   String? redirectionModule;
   int? redirectionId;
+  String? url;
 
-  BannerList(
-      {this.id,
-      this.image,
-      this.title,
-      this.subtitle,
-      this.description,
-      this.position,
-      this.bookingType,
-      this.redirectionType,
-      this.redirectionModule,
-      this.redirectionId});
+  BannerList({
+    this.id,
+    this.image,
+    this.title,
+    this.subtitle,
+    this.description,
+    this.position,
+    this.bookingType,
+    this.redirectionType,
+    this.redirectionModule,
+    this.redirectionId,
+    this.url,
+  });
 
   BannerList.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -66,6 +69,7 @@ class BannerList {
     redirectionType = json['redirection_type'];
     redirectionModule = json['redirection_module'];
     redirectionId = json['redirection_id'];
+    url = json['url'];
   }
 
   // Map<String, dynamic> toJson() {

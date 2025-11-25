@@ -510,7 +510,14 @@ class HomeWidgets {
         width: maxWidth * 0.46,
         decoration: BoxDecoration(
           border: Border.all(color: Colors.grey.withOpacity(.3), width: 0.5),
-          boxShadow: [boxShadow8],
+          boxShadow: [
+            boxShadow8.copyWith(
+              spreadRadius: 4,
+              blurRadius: 4,
+              color: Colors.grey.withValues(alpha: 0.6),
+            ),
+            // boxShadow8,
+          ],
           image: DecorationImage(image: AssetImage(img), fit: BoxFit.fill),
           // color: Colours.boxblue.withOpacity(0.1),
           borderRadius: BorderRadius.circular(containerRadius / 2),
@@ -2476,7 +2483,14 @@ class _CustomFabMenuState extends State<CustomFabMenu>
         Positioned(
           bottom: 16,
           right: 16,
-          child: SizedBox(width: 90, height: 50, child: _buildMainButton()),
+          child: SizedBox(
+            width: 90,
+            height: 50,
+            child: GestureDetector(
+              onTap: _toggleMenu,
+              child: const ProButton(),
+            ),
+          ),
         ),
       ],
     );
@@ -2551,6 +2565,94 @@ class _CustomFabMenuState extends State<CustomFabMenu>
           ],
         ),
       ),
+    );
+  }
+}
+
+class ProButton extends StatefulWidget {
+  const ProButton({super.key});
+
+  @override
+  State<ProButton> createState() => _ProButtonState();
+}
+
+class _ProButtonState extends State<ProButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 10),
+    )..repeat(); // infinite rotation
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Container(
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(32),
+            boxShadow: const [BoxShadow(blurRadius: 8, color: Colors.black26)],
+
+            // 🔥 Rotating gradient using controller value
+            gradient: LinearGradient(
+              colors: const [
+                Color(0xfff59099),
+                Color(0xff8467a6),
+                Color(0xff007bff),
+                Color(0xff00d4ff),
+                Color(0xffff5600),
+                Color(0xffffbb00),
+              ],
+              transform: GradientRotation(_controller.value * 6.28318),
+              // 6.28318 = 2π radians = full rotation
+            ),
+          ),
+
+          child: Container(
+            height: 40,
+            width: 80,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(32),
+              color: Colors.white,
+            ),
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    "assets/images/dq-logo-1.5x.png",
+                    height: 24,
+                    width: 24,
+                  ),
+                  const SizedBox(width: 6),
+                  const Text(
+                    "Pro",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

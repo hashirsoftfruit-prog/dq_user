@@ -1611,7 +1611,7 @@ class HomeManager extends ChangeNotifier {
       String tokn =
           getIt<SharedPreferences>().getString(StringConstants.token) ?? "";
       dynamic responseData = await getIt<DioClient>().get(endpoint, tokn);
-
+      
       if (responseData != null) {
         var result = BannersList.fromJson(responseData);
         mainBanners = result.mainBanners ?? [];

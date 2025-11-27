@@ -580,6 +580,7 @@ class _MenuDrawerScreenState extends State<MenuDrawerScreen> {
                           icon: "assets/images/contact-us.png",
                         ),
                       ),
+
                       InkWell(
                         highlightColor: Colors.transparent,
                         splashColor: Colors.transparent,

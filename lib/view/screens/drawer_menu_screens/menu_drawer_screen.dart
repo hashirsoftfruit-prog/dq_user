@@ -1,29 +1,29 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:dqapp/controller/managers/auth_manager.dart';
 import 'package:dqapp/controller/managers/home_manager.dart';
-import 'package:dqapp/fcm.dart';
 import 'package:dqapp/l10n/app_localizations.dart';
+import 'package:dqapp/view/screens/drawer_menu_screens/consultations_screen.dart';
+import 'package:dqapp/view/screens/drawer_menu_screens/medical_records_screen.dart';
+import 'package:dqapp/view/screens/drawer_menu_screens/my_doctors_screen.dart';
 import 'package:dqapp/view/screens/drawer_menu_screens/offers_screen.dart';
 import 'package:dqapp/view/screens/drawer_menu_screens/packages_screen.dart';
 import 'package:dqapp/view/screens/drawer_menu_screens/patients_screen.dart';
 import 'package:dqapp/view/screens/drawer_menu_screens/profile_screen.dart';
-import 'package:dqapp/view/screens/drawer_menu_screens/consultations_screen.dart';
-import 'package:dqapp/view/screens/drawer_menu_screens/medical_records_screen.dart';
-import 'package:dqapp/view/screens/drawer_menu_screens/my_doctors_screen.dart';
 import 'package:dqapp/view/screens/drawer_menu_screens/purchased_packages_screen.dart';
 import 'package:dqapp/view/screens/drawer_menu_screens/reminder_screens/reminder_screen.dart';
-import 'package:dqapp/view/screens/starting_screens/splash_scren.dart';
 import 'package:dqapp/view/screens/drawer_menu_screens/upcoming_appoinments_screen.dart';
+import 'package:dqapp/view/screens/refund_policy_page.dart';
+import 'package:dqapp/view/screens/starting_screens/splash_scren.dart';
+import 'package:dqapp/view/theme/text_styles.dart';
 import 'package:dqapp/view/widgets/common_widgets.dart';
 import 'package:entry/entry.dart';
 import 'package:flutter/material.dart';
-import 'package:dqapp/view/theme/text_styles.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../../../controller/managers/profile_manager.dart';
 import '../../../controller/managers/state_manager.dart';
 import '../../../model/helper/service_locator.dart';
@@ -554,6 +554,8 @@ class _MenuDrawerScreenState extends State<MenuDrawerScreen> {
                         highlightColor: Colors.transparent,
                         splashColor: Colors.transparent,
                         onTap: () async {
+                          Navigator.pop(context);
+
                           if (!await launchUrl(
                             Uri.parse("https://doctoronqueue.com/about-us/"),
                           )) {
@@ -569,6 +571,8 @@ class _MenuDrawerScreenState extends State<MenuDrawerScreen> {
                         highlightColor: Colors.transparent,
                         splashColor: Colors.transparent,
                         onTap: () async {
+                          Navigator.pop(context);
+
                           if (!await launchUrl(
                             Uri.parse("https://doctoronqueue.com/contact/"),
                           )) {
@@ -585,13 +589,13 @@ class _MenuDrawerScreenState extends State<MenuDrawerScreen> {
                         highlightColor: Colors.transparent,
                         splashColor: Colors.transparent,
                         onTap: () async {
-                          if (!await launchUrl(
-                            Uri.parse(
-                              "https://dqapp.doctoronqueue.com/refund-policy/",
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const RefundPolicyPage(),
                             ),
-                          )) {
-                            debugPrint("Error on url opening");
-                          }
+                          );
                         },
                         child: menuRowItem(
                           AppLocalizations.of(context)!.refundPolicy,

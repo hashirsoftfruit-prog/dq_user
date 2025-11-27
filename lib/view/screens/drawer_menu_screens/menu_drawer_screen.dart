@@ -23,6 +23,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../controller/managers/profile_manager.dart';
 import '../../../controller/managers/state_manager.dart';
 import '../../../model/helper/service_locator.dart';
@@ -547,6 +548,53 @@ class _MenuDrawerScreenState extends State<MenuDrawerScreen> {
                           icon: "assets/images/drawer-icon-language.png",
                           // scndTxt: getIt<SharedPreferences>().getString(StringConstants.language)=="ml"?AppLocalizations.of(context)!.malayalam:AppLocalizations.of(context)!.english)),
                           scndTxt: "English",
+                        ),
+                      ),
+                      InkWell(
+                        highlightColor: Colors.transparent,
+                        splashColor: Colors.transparent,
+                        onTap: () async {
+                          if (!await launchUrl(
+                            Uri.parse("https://doctoronqueue.com/about-us/"),
+                          )) {
+                            debugPrint("Error on url opening");
+                          }
+                        },
+                        child: menuRowItem(
+                          AppLocalizations.of(context)!.aboutus,
+                          icon: "assets/images/about-us.png",
+                        ),
+                      ),
+                      InkWell(
+                        highlightColor: Colors.transparent,
+                        splashColor: Colors.transparent,
+                        onTap: () async {
+                          if (!await launchUrl(
+                            Uri.parse("https://doctoronqueue.com/contact/"),
+                          )) {
+                            debugPrint("Error on url opening");
+                          }
+                        },
+                        child: menuRowItem(
+                          AppLocalizations.of(context)!.contactus,
+                          icon: "assets/images/contact-us.png",
+                        ),
+                      ),
+                      InkWell(
+                        highlightColor: Colors.transparent,
+                        splashColor: Colors.transparent,
+                        onTap: () async {
+                          if (!await launchUrl(
+                            Uri.parse(
+                              "https://dqapp.doctoronqueue.com/refund-policy/",
+                            ),
+                          )) {
+                            debugPrint("Error on url opening");
+                          }
+                        },
+                        child: menuRowItem(
+                          AppLocalizations.of(context)!.refundPolicy,
+                          icon: "assets/images/refund-policy.png",
                         ),
                       ),
                       InkWell(

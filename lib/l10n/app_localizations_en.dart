@@ -869,4 +869,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get paymentInfo => "Payment Info";
+
+  @override
+  String get aboutus => "Abbout Us";
+
+  @override
+  String get contactus => "Contact Us";
+
+  @override
+  String get refundPolicy => "Refund Policy";
 }

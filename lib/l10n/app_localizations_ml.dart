@@ -870,4 +870,13 @@ class AppLocalizationsMl extends AppLocalizations {
 
   @override
   String get paymentInfo => "പാക്കേജിന്റെ വിവരങ്ങൾ";
+
+  @override
+  String get aboutus => "ഞങ്ങളെക്കുറിച്ച്";
+
+  @override
+  String get contactus => "ബന്ധപ്പെടുക";
+
+  @override
+  String get refundPolicy => "റീഫണ്ട് പോളിസി";
 }
